@@ -35,8 +35,7 @@ public class AuthController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @Value("${com.logistics.authentication.pwd_token_expiration}")
-    private int pwd_token_expiration;
+    private int pwd_token_expiration = 10000;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;

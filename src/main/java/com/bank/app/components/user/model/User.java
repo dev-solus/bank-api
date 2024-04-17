@@ -2,7 +2,9 @@
 package com.bank.app.components.user.model;
 
 import com.bank.app.components.role.model.Role;
-import javax.persistence.*;
+
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

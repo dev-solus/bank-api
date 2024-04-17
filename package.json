@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "b": "set SPRING_PROFILES_ACTIVE=prod && mvn spring-boot:run",
+    "b": "set SPRING_PROFILES_ACTIVE=dev && mvn spring-boot:run",
     "dev": "set SPRING_PROFILES_ACTIVE=dev && mvn spring-boot:run",
     "install": "mvn dependency:resolve && mvn clean install",
     "1": "mvn clean install -Dmaven.test.skip=true",

@@ -1,6 +1,6 @@
 package com.bank.app.components.role.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 
