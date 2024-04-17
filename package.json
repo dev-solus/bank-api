@@ -1,0 +1,26 @@
+{
+  "name": "rafeek-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "b": "set SPRING_PROFILES_ACTIVE=prod && mvn spring-boot:run",
+    "dev": "set SPRING_PROFILES_ACTIVE=dev && mvn spring-boot:run",
+    "install": "mvn dependency:resolve && mvn clean install",
+    "1": "mvn clean install -Dmaven.test.skip=true",
+    "p": "mvn clean package -Dspring.profiles.active=prod --file pom.xml",
+    "8": "setx JAVA_HOME \"C:\\Program Files\\Java\\jdk-8\" /M",
+    "16": "setx JAVA_HOME \"C:\\Program Files\\Java\\jdk-16.0.1\" /M"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DigiTransform-MA/rafeek-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DigiTransform-MA/rafeek-api/issues"
+  },
+  "homepage": "https://github.com/DigiTransform-MA/rafeek-api#readme"
+}
