@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -69,6 +70,8 @@ public class WebSecurityConfiguration {
         http.authorizeHttpRequests((requests) -> requests
         .requestMatchers("/", "/**").permitAll()
         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        .requestMatchers(String.format("%s/**", restApiDocPath)).permitAll()
+        .requestMatchers(String.format("%s/**", swaggerPath)).permitAll()
         .requestMatchers("/uploads/**").permitAll() 
         .anyRequest().authenticated()
         );
