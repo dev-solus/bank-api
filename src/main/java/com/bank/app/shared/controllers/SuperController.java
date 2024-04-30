@@ -1,6 +1,5 @@
 package com.bank.app.shared.controllers;
 
-import com.bank.app.shared.repositories.GenericRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -8,6 +7,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.bank.app.shared.repository.GenericRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -98,7 +104,7 @@ public class SuperController<T extends Serializable, ID> {
 
         return ResponseEntity.ok(Boolean.TRUE);
     }
-  /*  @PatchMapping(path = "/patch/{id}", consumes = "application/json-patch+json")
+    @PatchMapping(path = "/patch/{id}", consumes = "application/json-patch+json")
     public ResponseEntity<?> patch(@PathVariable ID id, @RequestBody JsonPatch patch) {
 
         Optional<T> optional = repository.findById(id);
@@ -127,6 +133,6 @@ public class SuperController<T extends Serializable, ID> {
         }
 
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-    }*/
+    }
 
 }

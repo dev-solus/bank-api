@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "b": "set SPRING_PROFILES_ACTIVE=dev && mvn spring-boot:run",
+    "f": "cd angular && ng serve --hmr --port 4201",
     "dev": "set SPRING_PROFILES_ACTIVE=dev && mvn spring-boot:run",
     "install": "mvn dependency:resolve && mvn clean install",
     "1": "mvn clean install -Dmaven.test.skip=true",
