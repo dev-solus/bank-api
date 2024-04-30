@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("api/auth")
 public class AuthController {
 
     @Autowired
@@ -169,8 +169,8 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("token", token, "user", user, "message", "Successful", "role", user.getRole()));
     }
 
-    @PostMapping("/changePassword/{token}")
-    public ResponseEntity<?> changePassword(@RequestBody UserDto model, @PathVariable("token") String token) {
+    @PostMapping("/resetPassword/{token}")
+    public ResponseEntity<?> resetPassword(@RequestBody UserDto model, @PathVariable("token") String token) {
 
         String email = null;
         Long creation = 0L;

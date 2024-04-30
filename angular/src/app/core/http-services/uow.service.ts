@@ -10,10 +10,8 @@ import { Title, Meta } from '@angular/platform-browser';
 import { SnackService } from '@fuse/services/snack/snack.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, map, of, switchMap, take, tap } from 'rxjs';
-import { AccountsService } from "../api/core/api/accounts.service";
 import { UtilsService } from "./utils.service";
 import { FileUploadService } from './file.upload.service';
-import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root'

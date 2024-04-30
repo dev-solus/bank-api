@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { StorageService } from './storage.service';
-import { User } from '../api/core';
+import { User } from '../api';
 
 type UserClient = User
 const USER = 'user-client';
@@ -14,7 +14,7 @@ export class LocalService {
     readonly user = signal<UserClient>(null);
     readonly isSignin = signal(false);
     public token = '';
-    readonly isAdmin = computed(() => this.user()?.role.label === 'Admin');
+    readonly isAdmin = computed(() => this.user()?.role.name === 'Admin');
 
     constructor() {
         this.getLocal();

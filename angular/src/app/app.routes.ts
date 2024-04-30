@@ -18,26 +18,6 @@ export const appRoutes: Route[] = [
     // path. Below is another redirection for that path to redirect the user to the desired
     // location. This is a small convenience to keep all main routes together here on this file.
     { path: 'signed-in-redirect', pathMatch: 'full', redirectTo: '' },
-
-    // Auth routes for authenticated users
-    {
-        path: '',
-        canActivate: [NoAuthGuard],
-        canActivateChild: [NoAuthGuard],
-        component: LayoutComponent,
-        data: {
-            layout: 'empty'
-        },
-        children: [
-            // { path: 'sign-out', loadChildren: () => import('app/modules/auth/sign-out/sign-out.routes') },
-            // { path: 'unlock-session', loadChildren: () => import('app/modules/auth/unlock-session/unlock-session.routes') },
-
-            {
-                path: '',
-                loadChildren: () => import('app/modules/home/welcome.routes') },
-        ]
-    },
-
     // Auth routes for guests
     {
         path: '',
@@ -56,10 +36,6 @@ export const appRoutes: Route[] = [
         ]
     },
 
-
-
-
-
     // Admin routes
     {
         path: 'admin',
@@ -71,14 +47,6 @@ export const appRoutes: Route[] = [
             { path: '', pathMatch: 'full', redirectTo: 'product' },
             { path: 'user', loadChildren: () => import('app/modules/admin/user/user.routes') },
             { path: 'role', loadChildren: () => import('app/modules/admin/role/role.routes') },
-            { path: 'job', loadChildren: () => import('app/modules/admin/job/job.routes') },
-            { path: 'category-tree', loadChildren: () => import('app/modules/admin/category-tree/category-tree.routes') },
-            { path: 'product', loadChildren: () => import('app/modules/admin/product/product.routes') },
-            { path: 'order', loadChildren: () => import('app/modules/admin/order/order.routes') },
-            { path: 'orderStatus', loadChildren: () => import('app/modules/admin/orderStatus/orderStatus.routes') },
-            { path: 'paymentStatus', loadChildren: () => import('app/modules/admin/paymentStatus/paymentStatus.routes') },
-            { path: 'paymentType', loadChildren: () => import('app/modules/admin/paymentType/paymentType.routes') },
-            { path: 'paymentMethod', loadChildren: () => import('app/modules/admin/paymentMethod/paymentMethod.routes') },
         ]
     }
 ];

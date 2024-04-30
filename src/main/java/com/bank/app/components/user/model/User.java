@@ -58,7 +58,7 @@ public class User implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", updatable = false, insertable = false)
-    @JsonIgnore
+    // @JsonIgnore
     private Role role;
 
     @Column

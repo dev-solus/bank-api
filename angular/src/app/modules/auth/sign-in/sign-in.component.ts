@@ -12,13 +12,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { FuseConfigService } from '@fuse/services/config';
-import { LoginResponseDto } from 'app/core/api/core';
 import { UowService, TypeForm } from 'app/core/http-services/uow.service';
 import { Subject, tap, filter, map, switchMap, catchError, delay, from, of } from 'rxjs';
 import { MyImageComponent } from "../../../../@fuse/upload-file/display-image/my-image.component";
 import { NotificationsService } from 'app/layout/common/notifications/notifications.service';
 import { HttpClient } from '@angular/common/http';
-import { UserDataService } from 'app/modules/home/pages/services/user-data.service';
 
 @Component({
     selector: 'auth-sign-in',
@@ -45,7 +43,6 @@ export class AuthSignInComponent {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     public uow = inject(UowService);
-    private userDataService: UserDataService = inject(UserDataService)
 
     private http = inject(HttpClient);
     public _fuseConfigService = inject(FuseConfigService);
@@ -70,7 +67,7 @@ export class AuthSignInComponent {
         //
         tap(e => this.myForm.disable()),
         map(_ => this.myForm.getRawValue()),
-        switchMap(o => this.uow.core.account.apiAccountsLoginPost(o).pipe(
+        switchMap(o => this.uow.core.auth.login(o).pipe(
             catchError(this.uow.handleError),
         )),
         tap(r => this.showMessage.next(r)),
@@ -78,16 +75,7 @@ export class AuthSignInComponent {
         tap((r) => this.myForm.enable()),
         filter(r => r.code > 0),
         ///tap(r => this.uow.session.login(r.user, r.token)),
-        tap(r => {
-            try {
-                this.uow.session.login(r.user, r.token);
-                this.userDataService.saveUser(r.user, r.token); // Save user data in local storage
-                console.log(`User logged in and saved to local storage: ${r.user.id}`); // Confirm login and storage
-            } catch (error) {
-                console.error('Error during login and local storage operation:', error);
-            }
-            }),
-        // if admin redirect to console admin
+        tap(r => this.uow.session.login(r.user, r.token)),
         map(r => r.user.roleId === 1),
         tap(isAdmin => {
 
@@ -97,7 +85,7 @@ export class AuthSignInComponent {
         }),
         switchMap(_ => this.notificationsService.getAll()),
     ));
-    readonly showMessage = new Subject<LoginResponseDto>();
+    readonly showMessage = new Subject<any>();
     readonly message$ = this.showMessage.pipe(
         // tap(e => console.warn(e))
     )

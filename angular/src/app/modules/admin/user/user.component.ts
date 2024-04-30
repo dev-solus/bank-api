@@ -1,6 +1,5 @@
 import { Component, ViewChild,Signal, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { merge, Subject, switchMap, filter, map, startWith, tap, delay } from 'rxjs';
-import { User } from 'app/core/api/core';
+import { merge, Subject, switchMap, filter, map, startWith, tap, delay, catchError } from 'rxjs';
 import { UowService, TypeForm } from 'app/core/http-services/uow.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -15,10 +14,9 @@ import { FuseAlertComponent } from '@fuse/components/alert';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { toSignal } from '@angular/core/rxjs-interop';
-
-
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { MyImageComponent } from '@fuse/upload-file/display-image/my-image.component';
+import { User } from 'app/core/api';
 
 
 @Component({
@@ -41,7 +39,6 @@ import { MyImageComponent } from '@fuse/upload-file/display-image/my-image.compo
         MatSelectModule,
         MatIconModule,
         MatProgressSpinnerModule,
-        ,
         MyImageComponent,
         RouterLink,
     ],
@@ -51,7 +48,7 @@ export class UserComponent implements AfterViewInit {
     readonly uow = inject(UowService);
     readonly router = inject(Router);
     readonly route = inject(ActivatedRoute);
-    
+
 
     @ViewChild(MatPaginator, { static: true })
     readonly paginator: MatPaginator;
@@ -131,7 +128,7 @@ this.email.setValue('');
     search() {
         this.update.next(0);
     }
-    
+
 
     add() {
         this.router.navigate(['/admin/user', 0]);
@@ -145,5 +142,5 @@ this.email.setValue('');
         this.delete$.next(o);
     }
 
-    
+
 }

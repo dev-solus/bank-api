@@ -1,7 +1,6 @@
 import { Component,  ChangeDetectionStrategy, inject, ViewEncapsulation } from '@angular/core';
 import { Subject, delay, filter, map,  switchMap, take, takeUntil, tap, catchError } from 'rxjs';
 import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { Role } from 'app/core/api/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { fuseAnimations } from '@fuse/animations';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import { Role } from 'app/core/api';
 
 
 
@@ -40,7 +40,7 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material
         MatProgressSpinnerModule,
         MatDialogModule,
         FuseAlertComponent,
-        
+
     ],
 })
 export class UpdateComponent {
@@ -49,8 +49,8 @@ export class UpdateComponent {
     readonly uow = inject(UowService);
     readonly dialogRef = inject(MatDialogRef);
     readonly data = inject(MAT_DIALOG_DATA);
-    
-    
+
+
 
     readonly myForm: FormGroup<TypeForm<Role>> = this.fb.group({
         id: [0],
@@ -58,7 +58,7 @@ name: [null, []],
     }) as any;
 
     // select
-    
+
 
     readonly showMessage$ = new Subject<any>();
 
@@ -98,9 +98,8 @@ name: [null, []],
         tap(r => this.back(r)),
     ));
 
-    
+
 
     submit = (e: Role) =>  e.id === 0 ? this.post$.next() : this.put$.next();
     back = (e?: Role) =>  this.dialogRef.close(e);
 }
-    

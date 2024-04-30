@@ -60,7 +60,7 @@ export class AuthSignUpComponent implements OnInit
                 password  : ['', Validators.required],
                 company   : [''],
                 agreements: ['', Validators.requiredTrue],
-                RoleId: [2, [Validators.required, Validators.min(1)]] 
+                RoleId: [2, [Validators.required, Validators.min(1)]]
             },
         );
 
@@ -70,25 +70,12 @@ export class AuthSignUpComponent implements OnInit
     private post$ = new Subject<void>();
     private initializeFormSubmission(): void {
         this.post$.pipe(
-            tap(_ => console.log('Validating form...')),
             tap(_ => this.signUpForm.markAllAsTouched()),
-            tap(_ => console.log('Form touched and validation triggered')), // New log
             filter(_ => this.signUpForm.valid),
-            tap(_ => console.log('Form is valid, proceeding with submission')), // New log
             tap(_ => this.signUpForm.disable()),
             map(_ => this.signUpForm.getRawValue()),
-            tap(formValues => console.log('Submitting form with values:', formValues)), // New log
-            switchMap(formValues => this.uow.core.account.apiAccountsRegisterPost(formValues).pipe(
-                catchError(error => {
-                    console.error('Error during sign up:', error);
-                    this.signUpForm.enable(); // Re-enable the form if there's an error
-                    this.alert = {
-                        type: 'error',
-                        message: 'Something went wrong, please try again.'
-                    };
-                    this.showAlert = true;
-                    throw error; // Re-throw the error for further handling
-                })
+            switchMap(formValues => this.uow.core.auth.register(formValues).pipe(
+                catchError(this.uow.handleError)
             )),
             tap(_ => {
                 console.log('Registration successful');
@@ -99,8 +86,8 @@ export class AuthSignUpComponent implements OnInit
             tap(_ => this.signUpForm.enable()) // Re-enable the form after a delay
         ).subscribe();
     }
-    
-    
+
+
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -136,9 +123,9 @@ export class AuthSignUpComponent implements OnInit
             },
             error: (response) => {
               this.signUpForm.enable(); // Re-enable the form
-    
+
               this.signUpNgForm.resetForm(); // Reset the form
-    
+
               // Set and show the alert
                 this.alert = {
                 type: 'error',
@@ -173,5 +160,5 @@ export class AuthSignUpComponent implements OnInit
                     // Show the alert
                     this.showAlert = true;
                 },
-            ); 
+            );
     } */

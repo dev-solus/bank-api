@@ -1,7 +1,6 @@
-import { Component,  ChangeDetectionStrategy, inject, ViewEncapsulation } from '@angular/core';
-import { Subject, delay, filter, map,  switchMap, take, takeUntil, tap, catchError } from 'rxjs';
+import { Component, ChangeDetectionStrategy, inject, ViewEncapsulation } from '@angular/core';
+import { Subject, delay, filter, map, switchMap, take, takeUntil, tap, catchError } from 'rxjs';
 import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { User } from 'app/core/api/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,6 +17,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { UploadFileComponent } from '@fuse/upload-file/upload-file.component';
+import { User } from 'app/core/api';
 
 @Component({
     standalone: true,
@@ -25,7 +25,7 @@ import { UploadFileComponent } from '@fuse/upload-file/upload-file.component';
     templateUrl: './update.component.html',
     styles: [``],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    animations   : fuseAnimations,
+    animations: fuseAnimations,
     imports: [
         CommonModule,
         FormsModule,
@@ -47,25 +47,25 @@ export class UpdateComponent {
     //di
     readonly fb = inject(FormBuilder);
     readonly uow = inject(UowService);
-    
-    
+
+
     readonly route = inject(ActivatedRoute);
     readonly router = inject(Router);
 
     readonly myForm: FormGroup<TypeForm<User>> = this.fb.group({
         id: [0],
-firstname: [null, []],
-lastname: [null, []],
-cin: [null, []],
-email: [null, []],
-password: [null, []],
-phone: [null, []],
-birthdate: [new Date(), [ ]],
-avatar: [null, []],
-gender: [null, []],
-address: [null, []],
-active: [null, []],
-roleId: [0, [Validators.min(1), ]],
+        firstname: [null, []],
+        lastname: [null, []],
+        cin: [null, []],
+        email: [null, []],
+        password: [null, []],
+        phone: [null, []],
+        birthdate: [new Date(), []],
+        avatar: [null, []],
+        gender: [null, []],
+        address: [null, []],
+        active: [null, []],
+        roleId: [0, [Validators.min(1),]],
     }) as any;
 
     // select
@@ -92,7 +92,7 @@ roleId: [0, [Validators.min(1), ]],
     ));
 
     readonly put$ = new Subject<void>();
-    readonly #put$ = toSignal( this.put$.pipe(
+    readonly #put$ = toSignal(this.put$.pipe(
         tap(_ => this.uow.logInvalidFields(this.myForm)),
         tap(_ => this.myForm.markAllAsTouched()),
         filter(_ => this.myForm.valid && this.myForm.dirty),
@@ -117,7 +117,6 @@ roleId: [0, [Validators.min(1), ]],
         tap(r => this.myForm.patchValue(r)),
     ));
 
-    submit = (e: User) =>  e.id === 0 ? this.post$.next() : this.put$.next();
-    back = (e?: User) =>  this.router.navigate(['../'], { relativeTo: this.route });
+    submit = (e: User) => e.id === 0 ? this.post$.next() : this.put$.next();
+    back = (e?: User) => this.router.navigate(['../'], { relativeTo: this.route });
 }
-    

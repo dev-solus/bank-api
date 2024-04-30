@@ -1,6 +1,5 @@
 import { Component, ViewChild,Signal, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { merge, Subject, switchMap, filter, map, startWith, tap, delay } from 'rxjs';
-import { Role } from 'app/core/api/core';
+import { merge, Subject, switchMap, filter, map, startWith, tap, delay, catchError } from 'rxjs';
 import { UowService, TypeForm } from 'app/core/http-services/uow.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -17,8 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { UpdateComponent } from './update/update.component';
 import { MatDialog } from '@angular/material/dialog';
-
-
+import { Role } from 'app/core/api';
 
 
 @Component({
@@ -41,16 +39,13 @@ import { MatDialog } from '@angular/material/dialog';
         MatSelectModule,
         MatIconModule,
         MatProgressSpinnerModule,
-        ,
-        
-        
     ],
 })
 export class RoleComponent implements AfterViewInit {
     //DI
     readonly uow = inject(UowService);
-    
-    
+
+
     readonly dialog = inject(MatDialog);
 
     @ViewChild(MatPaginator, { static: true })
@@ -104,7 +99,7 @@ export class RoleComponent implements AfterViewInit {
     );
 
     // select
-    
+
 
     readonly name = new FormControl('');
 
@@ -125,7 +120,7 @@ export class RoleComponent implements AfterViewInit {
     search() {
         this.update.next(0);
     }
-    
+
     openDialog(o: Role, text) {
         const dialogRef = this.dialog.open(UpdateComponent, {
             // width: '1100px',
@@ -137,7 +132,7 @@ export class RoleComponent implements AfterViewInit {
     };
 
     add() {
-        
+
         this.openDialog({} as Role, 'Ajouter Role').subscribe(result => {
             if (result) {
                 this.update.next(0);
@@ -146,7 +141,7 @@ export class RoleComponent implements AfterViewInit {
     }
 
     edit(o: Role) {
-        
+
         this.openDialog(o, 'Modifier Role').subscribe((result: Role) => {
             if (result) {
                 this.update.next(0);
@@ -158,5 +153,5 @@ export class RoleComponent implements AfterViewInit {
         this.delete$.next(o);
     }
 
-    
+
 }

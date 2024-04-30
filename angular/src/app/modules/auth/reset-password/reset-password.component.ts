@@ -11,10 +11,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { FuseValidators } from '@fuse/validators';
-import { LoginResponseDto } from 'app/core/api/core';
 import { UowService, TypeForm } from 'app/core/http-services/uow.service';
 import { Subject, catchError, delay, filter, finalize, map, switchMap, take, tap } from 'rxjs';
-import { MyImageComponent } from "../../../../@fuse/upload-file/display-image/my-image.component";
+import { MyImageComponent } from "@fuse/upload-file/display-image/my-image.component";
 
 @Component({
     selector: 'auth-reset-password',
@@ -71,19 +70,19 @@ export class AuthResetPasswordComponent {
         map(_ => this.myForm.getRawValue()),
 
         map(o => ({ token: this.token(), model: { password: o.password } })),
-        switchMap(e => this.uow.core.account.apiAccountsResetPasswordTokenPost(e.token).pipe(
+        switchMap(e => this.uow.core.auth.resetPassword(e.token, e.model).pipe(
             catchError(this.uow.handleError),
         )),
         tap(r => this.showMessage.next(r)),
         // tap(r => console.warn(r.token)),
-        tap((r) => r.code < 0 ? this.myForm.enable() : null),
+        tap((r:any) => r.code < 0 ? this.myForm.enable() : null),
         // tap(r => this.myForm.reset()),
         filter(r => r.code > 0),
         delay(2500),
         tap(r => this.router.navigate(['/sign-in'])),
     ));
 
-    private readonly showMessage = new Subject<LoginResponseDto>();
+    private readonly showMessage = new Subject<any>();
 
     readonly message$ = this.showMessage.pipe(
         tap(e => console.warn(e))
