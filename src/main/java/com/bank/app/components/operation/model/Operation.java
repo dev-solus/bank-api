@@ -35,19 +35,19 @@ public class Operation implements Serializable {
     private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", updatable = false, insertable = false)
+    @JoinColumn(name = "accountDebit_id", updatable = false, insertable = false)
     @JsonIgnore
-    private Account account;
+    private Account accountDebit;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accountDist_id", updatable = false, insertable = false)
+    @JoinColumn(name = "accountCredit_id", updatable = false, insertable = false)
     @JsonIgnore
-    private Account accountDist;
+    private Account accountCredit;
 
     @Column
-    private Long account_id;
+    private Long accountDebit_id;
 
     @Column
-    private Long accountDist_id;
+    private Long accountCredit_id;
 
 }

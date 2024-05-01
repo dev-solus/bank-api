@@ -39,7 +39,10 @@ public class Account implements Serializable {
     @Column
     private Long user_id;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "account")
-    private Set<Operation> operations;
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "accountCredit")
+    private Set<Operation> creditoperations;
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "accountDebit")
+    private Set<Operation> debitoperations;
 
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.bank.app.components.account.repository.*;
 
@@ -21,8 +22,8 @@ public class UowService {
 	@Autowired public AccountRepository accounts;
 	@Autowired public OperationRepository operations;
 
-	
+
+  	@Autowired public BCryptPasswordEncoder bCrypt;
 	@Autowired public UtilsService utils;
 	@Autowired public ObjectMapper objectMapper;
-	
 }
