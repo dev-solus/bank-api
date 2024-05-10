@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping(value ="api/auth", produces = { "application/json" })
 public class AuthController {
 
     @Autowired
@@ -159,9 +159,11 @@ public class AuthController {
             return ResponseEntity.ok(Map.of("code", -3, "message", "[DEV] user disabled"));
         }
 
+        var roleName = uow.roles.findById(user.getRole_id()).get().getName();
+
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email", user.getEmail());
-        claims.put("role", user.getRole());
+        // claims.put("email", user.getEmail());
+        // claims.put("role", roleName);
         claims.put("id", user.getId());
 
         String token = jwtTokenUtil.doGenerateToken(claims, user.getEmail());

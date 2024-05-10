@@ -23,24 +23,24 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class WebSecurityConfiguration {
 
-
     @Value("${springdoc.api-docs.path}")
     private String restApiDocPath;
     @Value("${springdoc.swagger-ui.path}")
     private String swaggerPath;
 
     @Autowired
-	private Logger logger;
-	@Autowired
-	private JwtTokenFilter jwtTokenFilter;
+    private Logger logger;
+    @Autowired
+    private JwtTokenFilter jwtTokenFilter;
 
-    // public WebSecurityConfiguration(Logger logger, JwtTokenFilter jwtTokenFilter) {
-    //     super();
+    // public WebSecurityConfiguration(Logger logger, JwtTokenFilter jwtTokenFilter)
+    // {
+    // super();
 
-    //     this.logger = logger;
+    // this.logger = logger;
 
-    //     // Inherit security context in async function calls
-    //     SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    // // Inherit security context in async function calls
+    // SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     // }
 
     // Set password encoding schema
@@ -49,11 +49,10 @@ public class WebSecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		// Enable CORS and disable CSRF
-        http = http.cors(cors -> cors.disable());
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // Enable CORS and disable CSRF
+        http = http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http = http.csrf(csrf -> csrf.disable());
 
         // Set session management to stateless
@@ -67,29 +66,27 @@ public class WebSecurityConfiguration {
 
         // Set permissions on endpoints
         http.authorizeHttpRequests((requests) -> requests
-        .requestMatchers("/", "/**").permitAll()
-        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-        .requestMatchers(String.format("%s/**", restApiDocPath)).permitAll()
-        .requestMatchers(String.format("%s/**", swaggerPath)).permitAll()
-        .requestMatchers("/uploads/**").permitAll() 
-        .anyRequest().authenticated()
-        );
-    
+                .requestMatchers("/", "/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers(String.format("%s/**", restApiDocPath)).permitAll()
+                .requestMatchers(String.format("%s/**", swaggerPath)).permitAll()
+                .requestMatchers("/uploads/**").permitAll()
+                .anyRequest().authenticated());
 
         // Add JWT token filter
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-	}
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        final CorsConfiguration configuration = new CorsConfiguration();
+        final var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

@@ -18,6 +18,7 @@ export interface Account {
     balance?: number;
     status?: string;
     user_id?: number;
-    operations?: Set<Operation>;
+    creditoperations?: Set<Operation>;
+    debitoperations?: Set<Operation>;
 }
 

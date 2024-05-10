@@ -1,5 +1,5 @@
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule, NgIf } from '@angular/common';
 import { Component, ViewEncapsulation, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,8 +26,7 @@ import { HttpClient } from '@angular/common/http';
     standalone: true,
     imports: [RouterLink,
         FuseAlertComponent,
-        NgIf,
-        AsyncPipe,
+        CommonModule,
         FormsModule,
         ReactiveFormsModule,
         MatFormFieldModule,
@@ -51,25 +50,21 @@ export class AuthSignInComponent {
 
 
     readonly myForm: FormGroup<TypeForm<{ email: string, password: string }>> = this.fb.group({
-        email: [this.uow.isDev ? 'app@admin.com' : '', [Validators.required]],
+        email: [this.uow.isDev ? 'admin@bank.com' : '', [Validators.required]],
         password: [this.uow.isDev ? '123' : '', Validators.required],
     }) as any;
 
     readonly signin = new Subject<void>();
     readonly signin$ = toSignal(this.signin.pipe(
-        tap(e => {
-            this.uow.logInvalidFields(this.myForm);
-        }),
-        //
+        tap(e =>  this.uow.logInvalidFields(this.myForm) ),
         tap(_ => this.myForm.markAllAsTouched()),
-        //
         filter(e => this.myForm.valid),
-        //
         tap(e => this.myForm.disable()),
         map(_ => this.myForm.getRawValue()),
         switchMap(o => this.uow.core.auth.login(o).pipe(
             catchError(this.uow.handleError),
         )),
+        tap(e => console.warn(e)),
         tap(r => this.showMessage.next(r)),
         delay(1300),
         tap((r) => this.myForm.enable()),
@@ -83,10 +78,6 @@ export class AuthSignInComponent {
 
             this.router.navigateByUrl(redirectURL);
         }),
-        switchMap(_ => this.notificationsService.getAll()),
     ));
     readonly showMessage = new Subject<any>();
-    readonly message$ = this.showMessage.pipe(
-        // tap(e => console.warn(e))
-    )
 }

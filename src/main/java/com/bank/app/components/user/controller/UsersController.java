@@ -18,7 +18,7 @@ import org.springframework.data.domain.*;
 import org.hibernate.exception.ConstraintViolationException;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping(value ="api/users", produces = { "application/json" })
 public class UsersController extends SuperController<User, Long> {
 
 

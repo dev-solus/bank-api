@@ -29,7 +29,7 @@ public class User implements Serializable {
     @Column
     private String lastname;
 
-    @Column
+    @Column(unique = true)
     private String cin;
 
     @Column(unique = true)

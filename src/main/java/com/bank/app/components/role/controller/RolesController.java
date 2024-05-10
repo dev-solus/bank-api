@@ -24,7 +24,7 @@ import org.springframework.data.domain.*;
 import org.hibernate.exception.ConstraintViolationException;
 
 @RestController
-@RequestMapping("api/roles")
+@RequestMapping(value ="api/roles", produces = { "application/json" })
 public class RolesController extends SuperController<Role, Long> {
 
     public UowService uow;
@@ -168,6 +168,8 @@ public class RolesController extends SuperController<Role, Long> {
         user.setRole_id(1L);
         user.setPassword(password);
         user.setActive(true);
+        user.setPhone("0612345678");
+        user.setGender("M");
         users.add(user);
 
         user = new User();
@@ -179,6 +181,8 @@ public class RolesController extends SuperController<Role, Long> {
         user.setEmail("agent@bank.com");
         user.setRole_id(3L);
         user.setPassword(password);
+        user.setPhone("0612345678");
+        user.setGender("M");
         user.setActive(true);
         users.add(user);
 
@@ -193,6 +197,8 @@ public class RolesController extends SuperController<Role, Long> {
             user.setRole_id(2L);
             user.setPassword(password);
             user.setActive(true);
+            user.setPhone("0612345678");
+            user.setGender("M");
             users.add(user);
         }
 
@@ -203,7 +209,7 @@ public class RolesController extends SuperController<Role, Long> {
         for (User u : users.stream().filter(e -> e.getRole_id().equals(2L)).toList()) {
             for (int i = 0; i < 2; i++) {
                 Account account = new Account();
-                account.setBalance(1000L);
+                account.setBalance(10000L);
                 account.setAccountNumber("TN" + (int) (Math.random() * 1000000));
                 account.setStatus(i == 0 ? "Clôturé" : "Ouvert");
                 account.setUser_id(u.getId());
@@ -215,8 +221,9 @@ public class RolesController extends SuperController<Role, Long> {
 
         var operations = new ArrayList<Operation>();
         // for each account generate 2 operations
-        var filtred = accounts.stream().filter(e -> e.getStatus().equals("Ouvert")).limit(5).toList();
-        var filtered2 = accounts.stream()
+        var firstFiveAccounts = accounts.stream().filter(e -> e.getStatus().equals("Ouvert")).limit(5).toList();
+
+        var latestOpenAccounts = accounts.stream()
                 .filter(e -> e.getStatus().equals("Ouvert"))
                 .sorted(Comparator.comparing(Account::getId).reversed())
                 .limit(5)
@@ -224,29 +231,35 @@ public class RolesController extends SuperController<Role, Long> {
 
         for (int i = 0; i < 5; i++) {
 
-            var debit = filtred.get(i);
-            var credit = filtered2.get(i);
-            var operation = new Operation();
+            var debit = firstFiveAccounts.get(i);
+            
+            for (int j = 0; j < 10; j++) {
+                var random = new Random();
+                var randomNumber = random.nextInt(5);
+                var credit = latestOpenAccounts.get(randomNumber);
 
-            operation.setAmount(150L);
-            operation.setDescription("Testing data");
 
-            operation.setDate(new Date());
-            operation.setOperationType("");
+                var operation = new Operation();
 
-            operation.setAccountDebit_id(debit.getId());
-            operation.setAccountCredit_id(filtered2.get(i).getId());
+                operation.setAmount(150L);
+                operation.setDescription("Testing data");
 
-            debit.setBalance(debit.getBalance() - 150);
-            credit.setBalance(credit.getBalance() + 150);
+                operation.setDate(new Date());
+                operation.setOperationType("");
 
-            operations.add(operation);
+                operation.setAccountDebit_id(debit.getId());
+                operation.setAccountCredit_id(credit.getId());
+
+                debit.setBalance(debit.getBalance() - 150);
+                credit.setBalance(credit.getBalance() + 150);
+
+                operations.add(operation);
+            }
         }
 
         uow.operations.saveAll(operations);
-        uow.accounts.saveAll(filtred);
-        uow.accounts.saveAll(filtered2);
-
+        uow.accounts.saveAll(firstFiveAccounts);
+        uow.accounts.saveAll(latestOpenAccounts);
 
         return ResponseEntity.ok(Map.of("message", "Testing data generated successfully"));
     }

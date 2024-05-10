@@ -1,29 +1,30 @@
 package com.bank.app.configuration;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-
 import java.io.Serializable;
+import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenUtil implements Serializable {
     @Value("${jwt.secret}")
     private String secret;
-    private int refreshExpirationDateInMs = 365 * 24 * 60 * 60 * 1000;
 
+    @Value("${expiration_delay}")
+    private int delaiExpiration;
 
     public String getToken() {
         String token = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             token = (String) authentication.getCredentials();
         }
@@ -51,7 +52,7 @@ public class JwtTokenUtil implements Serializable {
 
     // for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
 
     // check if the token has expired
@@ -67,10 +68,24 @@ public class JwtTokenUtil implements Serializable {
     // Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
     // compaction of the JWT to a URL-safe string
     public String doGenerateToken(Map<String, Object> claims, String subject) {
+        try {
+            return Jwts
+                    .builder()
+                    .setClaims(claims)
+                    .setSubject(subject)
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + delaiExpiration))
+                    .signWith(getSignInKey(), SignatureAlgorithm.HS512)
+                    .compact();
 
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationDateInMs))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public Boolean validateToken(String token) {
@@ -83,7 +98,7 @@ public class JwtTokenUtil implements Serializable {
 
     public boolean validate(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token);
             return true;
         } catch (SignatureException ex) {
             // logger.error("Invalid JWT signature - {}", ex.getMessage());

@@ -21,11 +21,11 @@
 
 
             <!-- Alert -->
-            <ng-container *ngIf="message$ | async as e">
+            <ng-container *ngIf="showMessage | async as e">
                 <fuse-alert class="w-full my-5" [@shake]="true" [type]="e.code < 0 ? 'warn' : 'success'"
                     [appearance]="'border'">
                     <span fuseAlertTitle>Message</span>
-                    {{e.message}} 
+                    {{e.message}}
                 </fuse-alert>
             </ng-container>
 

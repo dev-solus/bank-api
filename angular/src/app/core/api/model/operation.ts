@@ -17,7 +17,7 @@ export interface Operation {
     description?: string;
     amount?: number;
     date?: string;
-    account_id?: number;
-    accountDist_id?: number;
+    accountDebit_id?: number;
+    accountCredit_id?: number;
 }
 

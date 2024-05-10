@@ -19,7 +19,7 @@ import org.springframework.data.domain.*;
 import org.hibernate.exception.ConstraintViolationException;
 
 @RestController
-@RequestMapping("api/operations")
+@RequestMapping(value ="api/operations", produces = { "application/json" })
 public class OperationsController extends SuperController<Operation, Long> {
 
     public UowService uow;
