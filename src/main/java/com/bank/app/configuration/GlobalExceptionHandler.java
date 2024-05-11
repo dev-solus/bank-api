@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
+import org.hibernate.exception.ConstraintViolationException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -18,8 +18,25 @@ public class GlobalExceptionHandler {
         // Log the exception details
         // e.printStackTrace();
 
+        String cause = "";
+
+        // if(e.getCause() != null && e.getCause() instanceof ConstraintViolationException) {
+        //     cause = ((ConstraintViolationException)e.getCause()).getSQLException().getMessage();
+        // }
+
+        if(e.getCause() != null) {
+            cause = e.getCause().getMessage();
+        }
+
+        final Object causeMessage = cause;
+
         // Create a response body
-        var responseBody = new HashMap<>();
+        var responseBody = new HashMap<>(){
+			{
+				put("cause", causeMessage);
+			};
+        };
+
         responseBody.put("message", e.getMessage());
         responseBody.put("error", e.getClass().getSimpleName());
         responseBody.put("code", -HttpStatus.INTERNAL_SERVER_ERROR.value());

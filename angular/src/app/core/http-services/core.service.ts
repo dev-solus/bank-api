@@ -14,7 +14,7 @@ export class CoreService {
     readonly auth = this.utils.extendClass<User, AuthControllerService>(AuthControllerService, environment.apiUrl, 'Accounts');
 
     readonly users = this.utils.extendClass<User, UsersControllerService>(UsersControllerService, environment.apiUrl, 'Users');
-    readonly roles = this.utils.extendClass<Role, RolesControllerService>(RolesControllerService, environment.apiUrl, 'Roles');
+    readonly roles = this.utils.extendClass<Role, RolesControllerService>(RolesControllerService, environment.apiUrl, 'roles');
     readonly accounts = this.utils.extendClass<Account, AccountsControllerService>(AccountsControllerService, environment.apiUrl, 'Accounts');
     readonly operations = this.utils.extendClass<Operation, OperationsControllerService>(OperationsControllerService, environment.apiUrl, 'Operations');
 

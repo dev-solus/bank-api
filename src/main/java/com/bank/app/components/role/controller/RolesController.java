@@ -35,22 +35,24 @@ public class RolesController extends SuperController<Role, Long> {
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}")
-    @Override
+    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{name}")
+    // @Override
     public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
-            @PathVariable String sortBy, @PathVariable String sortDir) {
-        Sort sort = Sort.by(sortDir == "desc" ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+            @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable String name) {
 
-        Page<Role> query = repository.findAll(PageRequest.of(startIndex, pageSize, sort));
+        var sort = Sort.by(sortDir == "desc" ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
-        List<?> list = query.getContent().stream().map(e -> new HashMap<String, Object>() {
+        var query = repository.findAll((r, _, cb) -> name.equals("*") ? cb.and() : cb.like(cb.lower(r.get("name")), "%" + name.toLowerCase() + "%"),    
+            PageRequest.of(startIndex, pageSize, sort));
+
+        var list = query.getContent().stream().map(e -> new HashMap<String, Object>() {
             {
                 put("id", e.getId());
                 put("name", e.getName());
             }
         }).toList();
 
-        Long count = query.getTotalElements();
+        var count = query.getTotalElements();
 
         return ResponseEntity.ok(Map.of("count", count, "list", list));
     }
@@ -65,8 +67,8 @@ public class RolesController extends SuperController<Role, Long> {
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
     @PostMapping("/postRange")
     @Override
-    public ResponseEntity<?> postRange(@RequestBody List<Role> models) {
-        return super.postRange(models);
+    public ResponseEntity<?> addRange(@RequestBody List<Role> models) {
+        return super.addRange(models);
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
@@ -77,17 +79,17 @@ public class RolesController extends SuperController<Role, Long> {
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @PutMapping("/put/{id}")
+    @PutMapping("/update/{id}")
     @Override
-    public ResponseEntity<?> put(@PathVariable Long id, @RequestBody Role model) {
-        return super.put(id, model);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Role model) {
+        return super.update(id, model);
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @PostMapping("/post")
+    @PostMapping("/add")
     @Override
-    public ResponseEntity<?> post(@RequestBody Role model) {
-        return super.post(model);
+    public ResponseEntity<?> add(@RequestBody Role model) {
+        return super.add(model);
     }
 
     @PatchMapping(path = "/patch/{id}")

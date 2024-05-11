@@ -14,7 +14,7 @@ import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { FuseConfigService } from '@fuse/services/config';
 import { UowService, TypeForm } from 'app/core/http-services/uow.service';
 import { Subject, tap, filter, map, switchMap, catchError, delay, from, of } from 'rxjs';
-import { MyImageComponent } from "../../../../@fuse/upload-file/display-image/my-image.component";
+import { MyImageComponent } from "@fuse/upload-file/display-image/my-image.component";
 import { NotificationsService } from 'app/layout/common/notifications/notifications.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -71,13 +71,14 @@ export class AuthSignInComponent {
         filter(r => r.code > 0),
         ///tap(r => this.uow.session.login(r.user, r.token)),
         tap(r => this.uow.session.login(r.user, r.token)),
-        map(r => r.user.roleId === 1),
-        tap(isAdmin => {
+        tap(r => this.router.navigateByUrl((this.route.snapshot.queryParamMap.get('redirectURL') || '/admin') )),
+        // map(r => r.user.roleId === 1),
+        // tap(isAdmin => {
 
-            const redirectURL = this.route.snapshot.queryParamMap.get('redirectURL') || isAdmin ? '/admin' : '';
+        //     const redirectURL = this.route.snapshot.queryParamMap.get('redirectURL') || isAdmin ? '/admin' : '';
 
-            this.router.navigateByUrl(redirectURL);
-        }),
+        //     this.router.navigateByUrl(redirectURL);
+        // }),
     ));
     readonly showMessage = new Subject<any>();
 }

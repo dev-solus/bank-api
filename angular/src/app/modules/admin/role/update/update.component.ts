@@ -1,5 +1,5 @@
-import { Component,  ChangeDetectionStrategy, inject, ViewEncapsulation } from '@angular/core';
-import { Subject, delay, filter, map,  switchMap, take, takeUntil, tap, catchError } from 'rxjs';
+import { Component, ChangeDetectionStrategy, inject, ViewEncapsulation } from '@angular/core';
+import { Subject, delay, filter, map, switchMap, take, takeUntil, tap, catchError, of } from 'rxjs';
 import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,7 +14,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { fuseAnimations } from '@fuse/animations';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { Role } from 'app/core/api';
 
 
@@ -25,7 +25,7 @@ import { Role } from 'app/core/api';
     templateUrl: './update.component.html',
     styles: [``],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    animations   : fuseAnimations,
+    animations: fuseAnimations,
     imports: [
         CommonModule,
         FormsModule,
@@ -50,11 +50,14 @@ export class UpdateComponent {
     readonly dialogRef = inject(MatDialogRef);
     readonly data = inject(MAT_DIALOG_DATA);
 
-
+    readonly patchForm = toSignal(of(this.data).pipe(
+        delay(10),
+        tap(e => this.myForm.patchValue(e.model)),
+    ));
 
     readonly myForm: FormGroup<TypeForm<Role>> = this.fb.group({
         id: [0],
-name: [null, []],
+        name: [null, []],
     }) as any;
 
     // select
@@ -81,7 +84,7 @@ name: [null, []],
     ));
 
     readonly put$ = new Subject<void>();
-    readonly #put$ = toSignal( this.put$.pipe(
+    readonly #put$ = toSignal(this.put$.pipe(
         tap(_ => this.uow.logInvalidFields(this.myForm)),
         tap(_ => this.myForm.markAllAsTouched()),
         filter(_ => this.myForm.valid && this.myForm.dirty),
@@ -100,6 +103,6 @@ name: [null, []],
 
 
 
-    submit = (e: Role) =>  e.id === 0 ? this.post$.next() : this.put$.next();
-    back = (e?: Role) =>  this.dialogRef.close(e);
+    submit = (e: Role) => e.id === 0 ? this.post$.next() : this.put$.next();
+    back = (e?: Role) => this.dialogRef.close(e);
 }

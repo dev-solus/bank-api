@@ -7,7 +7,6 @@ import com.bank.app.shared.dto.Roles;
 import com.bank.app.shared.repository.UowService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 
@@ -15,7 +14,6 @@ import jakarta.annotation.security.RolesAllowed;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,10 +31,6 @@ public class AuthController {
     private JwtTokenUtil jwtTokenUtil;
 
     private int pwd_token_expiration = 10000;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
     // @RolesAllowed({Roles.ADMIN})
     @PatchMapping(path = "/patch/{id}")
@@ -92,7 +86,7 @@ public class AuthController {
 
         // model.setRole(Roles.NEWBIE);
 
-        model.setPassword(bCryptPasswordEncoder.encode(model.getPassword()));
+        model.setPassword(uow.bCrypt.encode(model.getPassword()));
 
        uow.users.save(model);
 
@@ -121,7 +115,7 @@ public class AuthController {
 
         // model.setRole(Roles.NEWBIE);
 
-        model.setPassword(bCryptPasswordEncoder.encode(model.getPassword()));
+        model.setPassword(uow.bCrypt.encode(model.getPassword()));
 
         User user = uow.users.save(model);
 
@@ -147,7 +141,7 @@ public class AuthController {
 
         User user = op.get();
 
-        boolean pwEqual = bCryptPasswordEncoder.matches(model.password,user.getPassword());
+        boolean pwEqual = uow.bCrypt.matches(model.password,user.getPassword());
 
         if (!pwEqual)
         {
@@ -162,13 +156,13 @@ public class AuthController {
         var roleName = uow.roles.findById(user.getRole_id()).get().getName();
 
         Map<String, Object> claims = new HashMap<>();
-        // claims.put("email", user.getEmail());
-        // claims.put("role", roleName);
+        claims.put("email", user.getEmail());
+        claims.put("role", roleName);
         claims.put("id", user.getId());
 
         String token = jwtTokenUtil.doGenerateToken(claims, user.getEmail());
 
-        return ResponseEntity.ok(Map.of("token", token, "user", user, "message", "Successful", "role", user.getRole()));
+        return ResponseEntity.ok(Map.of("token", token, "user", user, "message", "Successful", "code", 1));
     }
 
     @PostMapping("/resetPassword/{token}")
@@ -207,7 +201,7 @@ public class AuthController {
             return ResponseEntity.ok(Map.of("code", -1, "message", "No such a user"));
 
         User user = op.get();
-        user.setPassword(bCryptPasswordEncoder.encode(model.password));
+        user.setPassword(uow.bCrypt.encode(model.password));
         user.setActive(Boolean.TRUE);
 
         uow.users.save(user);

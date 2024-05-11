@@ -1,4 +1,4 @@
-import { Component, ViewChild,Signal, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ViewChild, Signal, AfterViewInit, ChangeDetectionStrategy, inject, viewChild } from '@angular/core';
 import { merge, Subject, switchMap, filter, map, startWith, tap, delay, catchError } from 'rxjs';
 import { UowService, TypeForm } from 'app/core/http-services/uow.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -48,42 +48,19 @@ export class RoleComponent implements AfterViewInit {
 
     readonly dialog = inject(MatDialog);
 
-    @ViewChild(MatPaginator, { static: true })
+    @ViewChild(MatPaginator, { static: false })
     readonly paginator: MatPaginator;
-    @ViewChild(MatSort, { static: true })
+    @ViewChild(MatSort, { static: false })
     readonly sort: MatSort;
+
+    // readonly paginator = viewChild.required<MatPaginator>('paginator')();
+    // readonly sort = viewChild.required<MatSort>(MatSort)();
+
 
     readonly update = new Subject<number>();
 
     public isLoadingResults = true;
     public totalRecords = 0;
-
-    readonly viewInitDone = new Subject<void>();
-    readonly dataSource: Signal<(Role)[]> = toSignal(this.viewInitDone.pipe(
-        delay(50),
-        switchMap(_ => merge(
-            this.sort.sortChange,
-            this.paginator.page,
-            this.update,
-            this.#delete$,
-        )),
-        startWith(null as any),
-        map(_ => [
-            this.paginator.pageIndex * (this.paginator.pageSize ?? 10),// startIndex
-            this.paginator.pageSize ?? 10,
-            this.sort.active ? this.sort.active : 'id',
-            this.sort.direction ? this.sort.direction : 'desc',
-            this.name.value === '' ? '*' : this.name.value,
-        ]),
-        tap(e => this.isLoadingResults = true),
-        switchMap(e => this.uow.core.roles.getList(e).pipe(
-            tap(e => this.totalRecords = e.count),
-            map(e => e.list))
-        ),
-        tap(e => this.isLoadingResults = false),
-    ), { initialValue: [] }) as any;
-
-    readonly showMessage$ = new Subject<any>();
 
     readonly delete$ = new Subject<Role>();
     readonly #delete$ = this.delete$.pipe(
@@ -97,6 +74,33 @@ export class RoleComponent implements AfterViewInit {
             )),
         )),
     );
+
+    readonly viewInitDone = new Subject<void>();
+    readonly dataSource = this.viewInitDone.pipe(
+        // delay(100),
+        switchMap(_ => merge(
+            this.sort.sortChange,
+            this.paginator.page,
+            this.update,
+            this.#delete$,
+        )),
+        startWith(null as any),
+        map(_ => [
+            (this.paginator?.pageIndex || 0) * (this.paginator?.pageSize ?? 10),// startIndex
+            this.paginator?.pageSize ?? 10,
+            this.sort?.active ? this.sort?.active : 'id',
+            this.sort?.direction ? this.sort?.direction : 'desc',
+            this.name.value === '' ? '*' : this.name.value,
+        ]),
+        tap(e => this.isLoadingResults = true),
+        switchMap(e => this.uow.core.roles.getList(e).pipe(
+            tap(e => this.totalRecords = e.count),
+            map(e => e.list))
+        ),
+        tap(e => this.isLoadingResults = false),
+    );
+
+    readonly showMessage$ = new Subject<any>();
 
     // select
 

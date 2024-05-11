@@ -59,8 +59,8 @@ public class SuperController<T extends Serializable, ID> {
 
         return ResponseEntity.ok(model.get());
     }
-    @PutMapping("/put/{id}")
-    public ResponseEntity<?> put(@PathVariable ID id, @RequestBody T model){
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable ID id, @RequestBody T model){
 
         Optional<T> optional = repository.findById(id);
 
@@ -72,8 +72,8 @@ public class SuperController<T extends Serializable, ID> {
 
         return ResponseEntity.ok(o);
     }
-    @PostMapping("/post")
-    public ResponseEntity<?> post(@RequestBody T model){
+    @PostMapping("/add")
+    public ResponseEntity<?> add(@RequestBody T model){
         try {
             T o = repository.save(model);
             return ResponseEntity.ok(o);
@@ -85,8 +85,8 @@ public class SuperController<T extends Serializable, ID> {
             return new ResponseEntity<>(Map.of("message",e.getMessage()),HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/postRange")
-    public ResponseEntity<?> postRange(@RequestBody List<T> models){
+    @PostMapping("/addRange")
+    public ResponseEntity<?> addRange(@RequestBody List<T> models){
         try {
             List<T> list = repository.saveAllAndFlush(models);
             return ResponseEntity.ok(list);

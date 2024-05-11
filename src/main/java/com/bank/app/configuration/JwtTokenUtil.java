@@ -52,7 +52,12 @@ public class JwtTokenUtil implements Serializable {
 
     // for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     // check if the token has expired
@@ -98,7 +103,7 @@ public class JwtTokenUtil implements Serializable {
 
     public boolean validate(String token) {
         try {
-            Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token);
             return true;
         } catch (SignatureException ex) {
             // logger.error("Invalid JWT signature - {}", ex.getMessage());

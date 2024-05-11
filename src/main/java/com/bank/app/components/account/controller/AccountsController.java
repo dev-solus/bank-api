@@ -63,8 +63,8 @@ public class AccountsController extends SuperController<Account, Long> {
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
     @PostMapping("/postRange")
     @Override
-    public ResponseEntity<?> postRange(@RequestBody List<Account> models) {
-        return super.postRange(models);
+    public ResponseEntity<?> addRange(@RequestBody List<Account> models) {
+        return super.addRange(models);
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
@@ -75,17 +75,17 @@ public class AccountsController extends SuperController<Account, Long> {
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @PutMapping("/put/{id}")
+    @PutMapping("/update/{id}")
     @Override
-    public ResponseEntity<?> put(@PathVariable Long id, @RequestBody Account model) {
-        return super.put(id, model);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Account model) {
+        return super.update(id, model);
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @PostMapping("/post")
+    @PostMapping("/add")
     @Override
-    public ResponseEntity<?> post(@RequestBody Account model) {
-        return super.post(model);
+    public ResponseEntity<?> add(@RequestBody Account model) {
+        return super.add(model);
     }
 
     @PatchMapping(path = "/patch/{id}")

@@ -65,8 +65,8 @@ public class OperationsController extends SuperController<Operation, Long> {
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
     @PostMapping("/postRange")
     @Override
-    public ResponseEntity<?> postRange(@RequestBody List<Operation> models) {
-        return super.postRange(models);
+    public ResponseEntity<?> addRange(@RequestBody List<Operation> models) {
+        return super.addRange(models);
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
@@ -77,17 +77,17 @@ public class OperationsController extends SuperController<Operation, Long> {
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @PutMapping("/put/{id}")
+    @PutMapping("/update/{id}")
     @Override
-    public ResponseEntity<?> put(@PathVariable Long id, @RequestBody Operation model) {
-        return super.put(id, model);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Operation model) {
+        return super.update(id, model);
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @PostMapping("/post")
+    @PostMapping("/add")
     @Override
-    public ResponseEntity<?> post(@RequestBody Operation model) {
-        return super.post(model);
+    public ResponseEntity<?> add(@RequestBody Operation model) {
+        return super.add(model);
     }
 
     @PatchMapping(path = "/patch/{id}")
