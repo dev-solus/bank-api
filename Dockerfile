@@ -1,9 +1,8 @@
-FROM maven:3.9.6 AS build-env
+FROM maven:3.9.6-eclipse-temurin-22-alpine AS build-env
 WORKDIR /app
 
 COPY pom.xml .
-
-RUN mvn dependency:resolve --no-transfer-progress
+RUN mvn dependency:go-offline --no-transfer-progress
 
 COPY . .
 
