@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,20 +29,20 @@ public class WebSecurityConfiguration {
     @Value("${springdoc.swagger-ui.path}")
     private String swaggerPath;
 
-    @Autowired
+    // @Autowired
     private Logger logger;
-    @Autowired
+    // @Autowired
     private JwtTokenFilter jwtTokenFilter;
 
-    // public WebSecurityConfiguration(Logger logger, JwtTokenFilter jwtTokenFilter)
-    // {
-    // super();
+    public WebSecurityConfiguration(Logger logger, JwtTokenFilter jwtTokenFilter) {
+        super();
 
-    // this.logger = logger;
+        this.logger = logger;
+        this.jwtTokenFilter = jwtTokenFilter;
 
-    // // Inherit security context in async function calls
-    // SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    // }
+        // Inherit security context in async function calls
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
 
     // Set password encoding schema
     @Bean
