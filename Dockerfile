@@ -8,6 +8,9 @@ RUN mvn dependency:resolve --no-transfer-progress
 COPY . .
 
 # RUN ls -al
+
+RUN mvn -v
+
 RUN mvn clean package -Dmaven.test.skip=true -Dspring.profiles.active=prod --file pom.xml
 
 
