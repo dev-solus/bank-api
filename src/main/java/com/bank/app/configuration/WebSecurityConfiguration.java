@@ -24,25 +24,25 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class WebSecurityConfiguration {
 
-    @Value("${springdoc.api-docs.path}")
-    private String restApiDocPath;
-    @Value("${springdoc.swagger-ui.path}")
-    private String swaggerPath;
+    // @Value("${springdoc.api-docs.path}")
+    // private String restApiDocPath;
+    // @Value("${springdoc.swagger-ui.path}")
+    // private String swaggerPath;
 
     // @Autowired
-    private Logger logger;
-    // @Autowired
-    private JwtTokenFilter jwtTokenFilter;
+    // private Logger logger;
+    // // @Autowired
+    // private JwtTokenFilter jwtTokenFilter;
 
-    public WebSecurityConfiguration(Logger logger, JwtTokenFilter jwtTokenFilter) {
-        super();
+    // public WebSecurityConfiguration(Logger logger, JwtTokenFilter jwtTokenFilter) {
+    //     super();
 
-        this.logger = logger;
-        this.jwtTokenFilter = jwtTokenFilter;
+    //     this.logger = logger;
+    //     this.jwtTokenFilter = jwtTokenFilter;
 
-        // Inherit security context in async function calls
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
+    //     // Inherit security context in async function calls
+    //     SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    // }
 
     // Set password encoding schema
     @Bean
@@ -61,7 +61,7 @@ public class WebSecurityConfiguration {
 
         // Set unauthorized requests exception handler
         http = http.exceptionHandling(handling -> handling.authenticationEntryPoint((request, response, ex) -> {
-            logger.error("Unauthorized request - {}", ex.getMessage());
+            // logger.error("Unauthorized request - {}", ex.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
         }));
 
@@ -75,7 +75,7 @@ public class WebSecurityConfiguration {
                 .anyRequest().authenticated());
 
         // Add JWT token filter
-        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        // http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
