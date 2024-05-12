@@ -1,4 +1,4 @@
-FROM maven:3.6.3 AS build-env
+FROM maven:3.9.6 AS build-env
 WORKDIR /app
 
 COPY pom.xml .
