@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Arrays;
 
-// @Configuration
+@Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 public class WebSecurityConfiguration {
