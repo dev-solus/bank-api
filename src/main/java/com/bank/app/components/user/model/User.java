@@ -56,7 +56,7 @@ public class User implements Serializable {
     @Column
     private Boolean active;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", updatable = false, insertable = false)
     // @JsonIgnore
     private Role role;

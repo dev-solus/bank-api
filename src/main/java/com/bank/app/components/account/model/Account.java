@@ -28,9 +28,9 @@ public class Account implements Serializable {
     @Column
     private Long balance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", updatable = false, insertable = false)
-    @JsonIgnore
+    // @JsonIgnore
     private User user;
 
     @Column

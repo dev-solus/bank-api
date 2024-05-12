@@ -19,7 +19,7 @@ import org.springframework.data.domain.*;
 import org.hibernate.exception.ConstraintViolationException;
 
 @RestController
-@RequestMapping(value ="api/accounts", produces = { "application/json" })
+@RequestMapping(value = "api/accounts", produces = { "application/json" })
 public class AccountsController extends SuperController<Account, Long> {
 
     public UowService uow;
@@ -30,25 +30,44 @@ public class AccountsController extends SuperController<Account, Long> {
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}")
-    @Override
-    public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
-            @PathVariable String sortBy, @PathVariable String sortDir) {
-        Sort sort = Sort.by(sortDir == "desc" ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{accountNumber}/{balanceMin}/{balanceMax}/{user_id}")
+    public ResponseEntity<?> GetAll(
+            @PathVariable int startIndex, @PathVariable int pageSize, @PathVariable String sortBy,
+            @PathVariable String sortDir, @PathVariable String accountNumber, @PathVariable Long balanceMin,
+            @PathVariable Long balanceMax, @PathVariable Long user_id) {
+        var sort = Sort.by(sortDir == "desc" ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
-        Page<Account> query = repository.findAll(PageRequest.of(startIndex, pageSize, sort));
+        var query = uow.accounts.findAll((r, _, cb) -> cb.and(
 
-        List<?> list = query.getContent().stream().map(e -> new HashMap<String, Object>() {
+                accountNumber.equals("*") ? cb.and()
+                        : cb.like(cb.lower(r.get("accountNumber")), "%" + accountNumber.toLowerCase() + "%"),
+                balanceMin.equals(balanceMax) ? cb.and() : cb.between(r.get("balance"), balanceMin, balanceMax),
+                user_id.equals(0L) ? cb.and() : cb.equal(r.get("user_id"), user_id)),
+                PageRequest.of(startIndex, pageSize, sort));
+
+        var list = query.getContent().stream().map(e -> new HashMap<String, Object>() {
             {
                 put("accountNumber", e.getAccountNumber());
                 put("balance", e.getBalance());
                 put("id", e.getId());
                 put("status", e.getStatus());
-                put("user", e.getUser());
+                put("user", new HashMap<String, Object>() {
+                    {
+                        put("id", e.getUser().getId());
+                        put("firstname", e.getUser().getFirstname());
+                        put("lastname", e.getUser().getLastname());
+                        // put("email", e.getUser().getEmail());
+                        // put("cin", e.getUser().getCin());
+                        // put("address", e.getUser().getAddress());
+                        // put("birthdate", e.getUser().getBirthdate());
+                        // put("active", e.getUser().getActive());
+                        // put("avatar", e.getUser().getAvatar());
+                    }
+                });
             }
         }).toList();
 
-        Long count = query.getTotalElements();
+        var count = query.getTotalElements();
 
         return ResponseEntity.ok(Map.of("count", count, "list", list));
     }

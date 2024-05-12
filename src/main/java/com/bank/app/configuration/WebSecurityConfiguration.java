@@ -66,10 +66,10 @@ public class WebSecurityConfiguration {
 
         // Set permissions on endpoints
         http.authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/", "/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers(String.format("%s/**", restApiDocPath)).permitAll()
-                .requestMatchers(String.format("%s/**", swaggerPath)).permitAll()
+                // .requestMatchers(String.format("%s/**", restApiDocPath)).permitAll()
+                // .requestMatchers(String.format("%s/**", swaggerPath)).permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .anyRequest().authenticated());
 
