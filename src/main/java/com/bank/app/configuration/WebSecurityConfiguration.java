@@ -19,14 +19,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Arrays;
 
-// @Configuration
+@Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration {
 
-    @Value("${springdoc.api-docs.path}")
-    private String restApiDocPath;
-    @Value("${springdoc.swagger-ui.path}")
-    private String swaggerPath;
+    // @Value("${springdoc.api-docs.path}")
+    // private String restApiDocPath;
+    // @Value("${springdoc.swagger-ui.path}")
+    // private String swaggerPath;
 
     @Autowired
     private Logger logger;
