@@ -12,7 +12,7 @@ COPY . .
 
 RUN mvn -v
 
-RUN mvn clean package -Dmaven.test.skip=true -Dspring.profiles.active=prod --file pom.xml --quiet
+RUN mvn clean package -Dmaven.test.skip=true -Dspring.profiles.active=dev --file pom.xml --quiet
 
 
 FROM openjdk:22-ea-jdk-slim
