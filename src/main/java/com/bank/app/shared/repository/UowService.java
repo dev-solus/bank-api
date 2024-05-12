@@ -23,7 +23,8 @@ public class UowService {
 	@Autowired public OperationRepository operations;
 
 
-  	@Autowired public BCryptPasswordEncoder bCrypt;
+  	// @Autowired 
+	public BCryptPasswordEncoder bCrypt = new BCryptPasswordEncoder();;
 	@Autowired public UtilsService utils;
 	@Autowired public ObjectMapper objectMapper;
 }
