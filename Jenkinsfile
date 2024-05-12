@@ -1,7 +1,7 @@
 #!groovy
 node {
   def apps = [
-    [name: "rafeek-api", port: '8080', exposed_port: '8081', path: '', domaine: "", volume: "/uploads",domaine_prefix: ''],
+    [name: "bank-api", port: '8080', exposed_port: '', path: '', domaine: "bank-api.dev-solus.com", volume: "/uploads",domaine_prefix: ''],
   ];
 
   def app
