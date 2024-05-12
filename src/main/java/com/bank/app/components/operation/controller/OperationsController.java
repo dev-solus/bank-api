@@ -34,7 +34,7 @@ public class OperationsController extends SuperController<Operation, Long> {
     @Override
     public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
             @PathVariable String sortBy, @PathVariable String sortDir) {
-        Sort sort = Sort.by(sortDir == "desc" ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+        Sort sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
         Page<Operation> query = repository.findAll(PageRequest.of(startIndex, pageSize, sort));
 

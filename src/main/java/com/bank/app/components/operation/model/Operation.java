@@ -36,12 +36,12 @@ public class Operation implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accountDebit_id", updatable = false, insertable = false)
-    @JsonIgnore
+    // @JsonIgnore
     private Account accountDebit;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accountCredit_id", updatable = false, insertable = false)
-    @JsonIgnore
+    // @JsonIgnore
     private Account accountCredit;
 
     @Column

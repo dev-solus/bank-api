@@ -94,11 +94,6 @@ public class AuthController {
 
     }
 
-    @GetMapping("/usersTest")
-    public ResponseEntity<?> usersTest() {
-        return ResponseEntity.ok(uow.users.findAll().stream().map(e -> Map.of("email", e.getEmail(), "role", e.getRole(), "id", e.getId())));
-    }
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User model) {
         Optional<User> userExist = uow.users.findByEmail(model.getEmail());

@@ -35,7 +35,7 @@ public class AccountsController extends SuperController<Account, Long> {
             @PathVariable int startIndex, @PathVariable int pageSize, @PathVariable String sortBy,
             @PathVariable String sortDir, @PathVariable String accountNumber, @PathVariable Long balanceMin,
             @PathVariable Long balanceMax, @PathVariable Long user_id) {
-        var sort = Sort.by(sortDir == "desc" ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+        var sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
         var query = uow.accounts.findAll((r, _, cb) -> cb.and(
 
@@ -51,6 +51,7 @@ public class AccountsController extends SuperController<Account, Long> {
                 put("balance", e.getBalance());
                 put("id", e.getId());
                 put("status", e.getStatus());
+                put("user_id", e.getUser_id());
                 put("user", new HashMap<String, Object>() {
                     {
                         put("id", e.getUser().getId());

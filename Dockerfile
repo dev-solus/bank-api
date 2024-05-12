@@ -18,6 +18,6 @@ RUN mvn clean package -Dmaven.test.skip=true -Dspring.profiles.active=dev --file
 FROM openjdk:22-ea-jdk-slim
 WORKDIR /app
 
-COPY --from=build-env /app/target/*.jar app.jar
+COPY --from=build-env /app/target/*.war app.war
 
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java","-war","app.war"]

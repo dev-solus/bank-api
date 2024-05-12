@@ -41,7 +41,7 @@ public class UsersController extends SuperController<User, Long> {
             @PathVariable String cin,
             @PathVariable String email
     ) {
-        var sort = Sort.by(sortDir == "desc" ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+        var sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
         var query = repository.findAll((r, _, cb) -> cb.and(
                 firstname.equals("*") ? cb.and()

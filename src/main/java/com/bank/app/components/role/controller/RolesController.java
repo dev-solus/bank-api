@@ -40,7 +40,7 @@ public class RolesController extends SuperController<Role, Long> {
     public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
             @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable String name) {
 
-        var sort = Sort.by(sortDir == "desc" ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+        var sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
         var query = repository.findAll((r, _, cb) -> name.equals("*") ? cb.and() : cb.like(cb.lower(r.get("name")), "%" + name.toLowerCase() + "%"),    
             PageRequest.of(startIndex, pageSize, sort));
