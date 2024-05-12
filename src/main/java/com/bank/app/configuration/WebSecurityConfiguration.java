@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity
+// @EnableWebSecurity
 public class WebSecurityConfiguration {
 
     @Value("${springdoc.api-docs.path}")
