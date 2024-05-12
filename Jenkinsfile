@@ -43,7 +43,14 @@ node {
       app = docker.build("${e.name}", "-t ${e.name} -f ./Dockerfile ./")
       // sh """docker build -t sa-dev-api-cms -f ./cmsApi/Dockerfile ./"""
 
-      sh "docker rm --force ${e.name}"
+       script{
+        try{
+            sh "docker rm --force ${e.name}"
+        }catch(Exception ex)
+        {
+          echo 'Exception occurred: ' + ex.toString()
+        }
+      }
 
       if (e.exposed_port == "") {
          sh """docker run -d \

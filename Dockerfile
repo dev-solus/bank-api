@@ -4,6 +4,8 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline --no-transfer-progress
 
+# RUN mvn dependency:resolve --no-transfer-progress
+
 COPY . .
 
 # RUN ls -al
