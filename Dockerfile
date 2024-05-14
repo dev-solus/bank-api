@@ -15,7 +15,8 @@ RUN mvn -v
 RUN mvn clean package -Dmaven.test.skip=true -Dspring.profiles.active=dev --file pom.xml --quiet
 
 
-FROM openjdk:22-ea-jdk-slim
+# FROM openjdk:22-ea-jdk-slim
+FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 COPY --from=build-env /app/target/*.war app.war

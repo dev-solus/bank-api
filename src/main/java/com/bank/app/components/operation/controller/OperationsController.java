@@ -13,7 +13,6 @@ import com.bank.app.shared.repository.UowService;
 
 import com.bank.app.shared.dto.Roles;
 import com.bank.app.components.operation.model.*;
-import com.bank.app.components.operation.repository.*;
 
 import org.springframework.data.domain.*;
 import org.hibernate.exception.ConstraintViolationException;
@@ -30,13 +29,16 @@ public class OperationsController extends SuperController<Operation, Long> {
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}")
-    @Override
+    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{accountId}")
+    // @Override
     public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
-            @PathVariable String sortBy, @PathVariable String sortDir) {
+            @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable Long accountId) {
         Sort sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
-        Page<Operation> query = repository.findAll(PageRequest.of(startIndex, pageSize, sort));
+        
+        var query = uow.operations.findAll((r, q, cb) -> cb.and(
+            accountId.equals(0L) ? cb.and() : cb.or(cb.equal(r.get("accountDebit_id"), accountId), cb.equal(r.get("accountCredit_id"), accountId))),
+        PageRequest.of(startIndex, pageSize, sort));
 
         List<?> list = query.getContent().stream().map(e -> new HashMap<String, Object>() {
             {

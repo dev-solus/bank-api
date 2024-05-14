@@ -42,7 +42,7 @@ public class RolesController extends SuperController<Role, Long> {
 
         var sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
-        var query = repository.findAll((r, _, cb) -> name.equals("*") ? cb.and() : cb.like(cb.lower(r.get("name")), "%" + name.toLowerCase() + "%"),    
+        var query = repository.findAll((r, q, cb) -> name.equals("*") ? cb.and() : cb.like(cb.lower(r.get("name")), "%" + name.toLowerCase() + "%"),    
             PageRequest.of(startIndex, pageSize, sort));
 
         var list = query.getContent().stream().map(e -> new HashMap<String, Object>() {

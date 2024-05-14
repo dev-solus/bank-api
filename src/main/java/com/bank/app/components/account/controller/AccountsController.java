@@ -30,17 +30,17 @@ public class AccountsController extends SuperController<Account, Long> {
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
-    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{accountNumber}/{balanceMin}/{balanceMax}/{user_id}")
+    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{cin}/{balanceMin}/{balanceMax}/{user_id}")
     public ResponseEntity<?> GetAll(
             @PathVariable int startIndex, @PathVariable int pageSize, @PathVariable String sortBy,
-            @PathVariable String sortDir, @PathVariable String accountNumber, @PathVariable Long balanceMin,
+            @PathVariable String sortDir, @PathVariable String cin, @PathVariable Long balanceMin,
             @PathVariable Long balanceMax, @PathVariable Long user_id) {
         var sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
-        var query = uow.accounts.findAll((r, _, cb) -> cb.and(
+        var query = uow.accounts.findAll((r, q, cb) -> cb.and(
 
-                accountNumber.equals("*") ? cb.and()
-                        : cb.like(cb.lower(r.get("accountNumber")), "%" + accountNumber.toLowerCase() + "%"),
+                cin.equals("*") ? cb.and()
+                        : cb.like(cb.lower(r.get("user").get("cin")), "%" + cin.toLowerCase() + "%"),
                 balanceMin.equals(balanceMax) ? cb.and() : cb.between(r.get("balance"), balanceMin, balanceMax),
                 user_id.equals(0L) ? cb.and() : cb.equal(r.get("user_id"), user_id)),
                 PageRequest.of(startIndex, pageSize, sort));
@@ -58,7 +58,7 @@ public class AccountsController extends SuperController<Account, Long> {
                         put("firstname", e.getUser().getFirstname());
                         put("lastname", e.getUser().getLastname());
                         // put("email", e.getUser().getEmail());
-                        // put("cin", e.getUser().getCin());
+                        put("cin", e.getUser().getCin());
                         // put("address", e.getUser().getAddress());
                         // put("birthdate", e.getUser().getBirthdate());
                         // put("active", e.getUser().getActive());

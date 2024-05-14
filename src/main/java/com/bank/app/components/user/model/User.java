@@ -65,6 +65,7 @@ public class User implements Serializable {
     private Long role_id;
 
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonIgnore
     private Set<Account> accounts;
 
 }

@@ -43,7 +43,7 @@ public class UsersController extends SuperController<User, Long> {
     ) {
         var sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
-        var query = repository.findAll((r, _, cb) -> cb.and(
+        var query = uow.users.findAll((r, q, cb) -> cb.and(
                 firstname.equals("*") ? cb.and()
                         : cb.or(
                                 cb.like(cb.lower(r.get("firstname")), "%" + firstname.toLowerCase() + "%"),
