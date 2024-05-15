@@ -42,8 +42,8 @@ public class OperationsController extends SuperController<Operation, Long> {
 
         List<?> list = query.getContent().stream().map(e -> new HashMap<String, Object>() {
             {
-                // put("account", e.getAccountDebit());
-                // put("accountDist", e.getAccountCredit());
+                put("accountDebit", e.getAccountDebit());
+                put("accountCredit", e.getAccountCredit());
                 put("amount", e.getAmount());
                 put("date", e.getDate());
                 put("description", e.getDescription());

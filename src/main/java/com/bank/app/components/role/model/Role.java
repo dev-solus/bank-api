@@ -1,6 +1,7 @@
 package com.bank.app.components.role.model;
 
 import com.bank.app.components.user.model.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,7 @@ public class Role implements Serializable {
     @Column
     private String name;
 
-    // @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "role")
-    // private Set<User> users;
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "role")
+    @JsonIgnore
+    private Set<User> users;
 }

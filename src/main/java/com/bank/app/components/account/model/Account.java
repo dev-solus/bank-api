@@ -28,9 +28,9 @@ public class Account implements Serializable {
     @Column
     private Long balance;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", updatable = false, insertable = false)
-    // @JsonIgnore
+    @JsonIgnore
     private User user;
 
     @Column
@@ -40,9 +40,11 @@ public class Account implements Serializable {
     private Long user_id;
 
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "accountCredit")
+    @JsonIgnore
     private Set<Operation> creditoperations;
 
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "accountDebit")
+    @JsonIgnore
     private Set<Operation> debitoperations;
 
 }

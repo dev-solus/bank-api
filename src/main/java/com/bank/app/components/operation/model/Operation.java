@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.bank.app.components.account.model.*;
 
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+// @Transactional
 public class Operation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +36,12 @@ public class Operation implements Serializable {
     @Column
     private Date date;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "accountDebit_id", updatable = false, insertable = false)
     // @JsonIgnore
     private Account accountDebit;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "accountCredit_id", updatable = false, insertable = false)
     // @JsonIgnore
     private Account accountCredit;
