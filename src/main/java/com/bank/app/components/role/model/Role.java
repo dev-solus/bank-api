@@ -23,6 +23,6 @@ public class Role implements Serializable {
     @Column
     private String name;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "role")
-    private Set<User> users;
+    // @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "role")
+    // private Set<User> users;
 }

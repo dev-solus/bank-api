@@ -17,7 +17,8 @@ import com.bank.app.components.account.repository.*;
 @Service
 @Transactional
 public class UowService {
-	@Autowired public UserRepository users;
+	@Autowired
+	public UserRepository users;
 	@Autowired public RoleRepository roles;
 	@Autowired public AccountRepository accounts;
 	@Autowired public OperationRepository operations;

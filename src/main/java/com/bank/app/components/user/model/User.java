@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -57,6 +60,7 @@ public class User implements Serializable {
     private Boolean active;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "role_id", updatable = false, insertable = false)
     // @JsonIgnore
     private Role role;

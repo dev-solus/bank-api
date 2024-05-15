@@ -19,6 +19,6 @@ RUN mvn clean package -Dmaven.test.skip=true -Dspring.profiles.active=dev --file
 FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
-COPY --from=build-env /app/target/*.war app.war
+COPY --from=build-env /app/target/*.jar app.jar
 
-ENTRYPOINT ["java","-war","app.war"]
+ENTRYPOINT ["java","-jar","app.jar"]
