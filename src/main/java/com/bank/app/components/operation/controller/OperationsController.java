@@ -18,7 +18,7 @@ import org.springframework.data.domain.*;
 import org.hibernate.exception.ConstraintViolationException;
 
 @RestController
-@RequestMapping(value ="api/operations", produces = { "application/json" })
+@RequestMapping(value = "api/operations", produces = { "application/json" })
 public class OperationsController extends SuperController<Operation, Long> {
 
     public UowService uow;
@@ -33,26 +33,13 @@ public class OperationsController extends SuperController<Operation, Long> {
     // @Override
     public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
             @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable Long accountId) {
-        Sort sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+        var sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
 
-        
-        var query = uow.operations.findAll((r, q, cb) -> cb.and(
-            accountId.equals(0L) ? cb.and() : cb.or(cb.equal(r.get("accountDebit_id"), accountId), cb.equal(r.get("accountCredit_id"), accountId))),
-        PageRequest.of(startIndex, pageSize, sort));
+        var query = uow.operations.findAllQ(accountId, PageRequest.of(startIndex, pageSize, sort));
 
-        List<?> list = query.getContent().stream().map(e -> new HashMap<String, Object>() {
-            {
-                put("accountDebit", e.getAccountDebit());
-                put("accountCredit", e.getAccountCredit());
-                put("amount", e.getAmount());
-                put("date", e.getDate());
-                put("description", e.getDescription());
-                put("id", e.getId());
-                put("operationType", e.getOperationType());
-            }
-        }).toList();
+        var list = query.getContent();
 
-        Long count = query.getTotalElements();
+        var count = query.getTotalElements();
 
         return ResponseEntity.ok(Map.of("count", count, "list", list));
     }

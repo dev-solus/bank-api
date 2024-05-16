@@ -73,6 +73,16 @@ public class AccountsController extends SuperController<Account, Long> {
         return ResponseEntity.ok(Map.of("count", count, "list", list));
     }
 
+    
+
+    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @GetMapping("/getForSelect")
+    public ResponseEntity<?> getForSelect() {
+        var list = uow.accounts.getForSelectGroup();
+
+        return ResponseEntity.ok(list);
+    }
+
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/get")
     @Override
