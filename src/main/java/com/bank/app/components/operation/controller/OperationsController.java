@@ -12,6 +12,7 @@ import com.bank.app.shared.controllers.SuperController;
 import com.bank.app.shared.repository.UowService;
 
 import com.bank.app.shared.dto.Roles;
+import com.bank.app.components.account.model.Account;
 import com.bank.app.components.operation.model.*;
 
 import org.springframework.data.domain.*;
@@ -69,6 +70,22 @@ public class OperationsController extends SuperController<Operation, Long> {
     @PutMapping("/update/{id}")
     @Override
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Operation model) {
+        var existed = uow.operations.findById(id).orElse(null);
+
+        var accountDebit = uow.accounts.findById(model.getAccountDebit_id()).orElse(null);
+        var accountCredit = uow.accounts.findById(model.getAccountCredit_id()).orElse(null);
+
+        if (accountDebit == null || accountCredit == null || model.getAmount() > accountDebit.getBalance()) {
+            return ResponseEntity.ok(Map.of("code", -1, "message", "Insufficient balance"));
+        }
+
+        accountDebit.setBalance(accountDebit.getBalance() + existed.getAmount() - model.getAmount());
+        uow.accounts.save(accountDebit);
+
+        accountCredit.setBalance(accountCredit.getBalance() - existed.getAmount() + model.getAmount());
+        uow.accounts.save(accountCredit);
+
+
         return super.update(id, model);
     }
 
@@ -76,7 +93,23 @@ public class OperationsController extends SuperController<Operation, Long> {
     @PostMapping("/add")
     @Override
     public ResponseEntity<?> add(@RequestBody Operation model) {
-        return super.add(model);
+
+        var accountDebit = uow.accounts.findById(model.getAccountDebit_id()).orElse(null);
+        var accountCredit = uow.accounts.findById(model.getAccountCredit_id()).orElse(null);
+
+        if (accountDebit == null || accountCredit == null || model.getAmount() > accountDebit.getBalance()) {
+            return ResponseEntity.ok(Map.of("code", -1, "message", "Insufficient balance"));
+        }
+
+        accountDebit.setBalance(accountDebit.getBalance() - model.getAmount());
+        uow.accounts.save(accountDebit);
+
+        accountCredit.setBalance(accountCredit.getBalance() + model.getAmount());
+        uow.accounts.save(accountCredit);
+
+        var o = uow.operations.save(model);
+
+        return ResponseEntity.ok(o);
     }
 
     @PatchMapping(path = "/patch/{id}")

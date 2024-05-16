@@ -108,6 +108,37 @@ public class UsersController extends SuperController<User, Long> {
     }
 
     @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @GetMapping("/getWithAccounts")
+    public ResponseEntity<?> getWithAccounts() {
+        // var list = uow.users.findAll().stream().map(e -> new HashMap<String, Object>() {
+        //     {
+        //         put("id", e.getId());
+        //         put("name", e.getFirstname() + " " + e.getLastname());
+        //         put("accounts", e.getAccounts().stream().map(a -> new HashMap<String, Object>() {
+        //             {
+        //                 put("id", a.getId());
+        //                 put("accountNumber", a.getAccountNumber());
+        //                 put("balance", a.getBalance());
+        //                 put("status", a.getStatus());
+        //             }
+        //         }).toList());
+        //     }
+        // }).toList();
+
+        var accounts = uow.accounts.getForSelect();
+
+        var list = uow.users.findAll().stream().map(e -> new HashMap<String, Object>() {
+            {
+                put("id", e.getId());
+                put("name", e.getFirstname() + " " + e.getLastname());
+                put("accounts", accounts.stream().filter(a -> a.user_id() == e.getId()).toList());
+            }
+        }).toList();
+
+        return ResponseEntity.ok(list);
+    }
+
+    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
     @PutMapping("/update/{id}")
     @Override
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody User model) {

@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.bank.app.components.account.model.Account;
 import com.bank.app.components.user.model.*;
 
 public interface UserRepository extends GenericRepository<User, Long> { 
@@ -20,4 +21,16 @@ public interface UserRepository extends GenericRepository<User, Long> {
     List<SelectDto> getForSelect();
 
 
+    // @Query("""
+    //         SELECT
+    //             e.id, 
+    //             CONCAT(e.firstname, ' ', e.lastname),
+    //             a
+    //         FROM User e
+    //             LEFT JOIN e.accounts a
+    //     """)
+    // List<SelectGroupDto> getForSelectGroup();
 }
+
+
+record SelectGroupDto(Long id, String name, List<Account> accounts) {}
