@@ -21,37 +21,37 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfiguration.class);
+    // private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfiguration.class);
 
-    @Autowired
-    private JwtTokenFilter jwtTokenFilter;
+    // @Autowired
+    // private JwtTokenFilter jwtTokenFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Enable CORS and disable CSRF
-        http = http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        // http = http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http = http.csrf(csrf -> csrf.disable());
 
         // Set session management to stateless
         http = http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // Set unauthorized requests exception handler
-        http = http.exceptionHandling(handling -> handling.authenticationEntryPoint((request, response, ex) -> {
-            logger.error("Unauthorized request - {}", ex.getMessage());
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
-        }));
+        // http = http.exceptionHandling(handling -> handling.authenticationEntryPoint((request, response, ex) -> {
+        //     // logger.error("Unauthorized request - {}", ex.getMessage());
+        //     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+        // }));
 
         // Set permissions on endpoints
-        http.authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // .requestMatchers(String.format("%s/**", restApiDocPath)).permitAll()
-                // .requestMatchers(String.format("%s/**", swaggerPath)).permitAll()
-                .requestMatchers("/uploads/**").permitAll()
-                .anyRequest().authenticated());
+        // http.authorizeHttpRequests((requests) -> requests
+        //         .requestMatchers("/api/auth/**").permitAll()
+        //         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        //         // .requestMatchers(String.format("%s/**", restApiDocPath)).permitAll()
+        //         // .requestMatchers(String.format("%s/**", swaggerPath)).permitAll()
+        //         .requestMatchers("/uploads/**").permitAll()
+        //         .anyRequest().authenticated());
 
         // Add JWT token filter
-        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        // http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

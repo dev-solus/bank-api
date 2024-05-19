@@ -20,7 +20,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 // 	}
 // }
 
-@SpringBootApplication(exclude = {WebMvcAutoConfiguration.class})
+@SpringBootApplication()
 public class AppApplication {
     public static void main(String[] args) {
         SpringApplication.run(AppApplication.class, args);
