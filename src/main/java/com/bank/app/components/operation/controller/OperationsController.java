@@ -70,19 +70,19 @@ public class OperationsController extends SuperController<Operation, Long> {
     @PutMapping("/update/{id}")
     @Override
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Operation model) {
-        var existed = uow.operations.findById(id).orElse(null);
+        var existedOperation = uow.operations.findById(id).orElse(null);
 
         var accountDebit = uow.accounts.findById(model.getAccountDebit_id()).orElse(null);
         var accountCredit = uow.accounts.findById(model.getAccountCredit_id()).orElse(null);
 
-        if (accountDebit == null || accountCredit == null || model.getAmount() > accountDebit.getBalance()) {
-            return ResponseEntity.ok(Map.of("code", -1, "message", "Insufficient balance"));
+        if (accountDebit == null || accountCredit == null || model.getAmount() > accountDebit.getBalance() + existedOperation.getAmount()) {
+            return ResponseEntity.ok(Map.of("code", -1, "message", "Solde insuffisant"));
         }
 
-        accountDebit.setBalance(accountDebit.getBalance() + existed.getAmount() - model.getAmount());
+        accountDebit.setBalance(accountDebit.getBalance() + existedOperation.getAmount() - model.getAmount());
         uow.accounts.save(accountDebit);
 
-        accountCredit.setBalance(accountCredit.getBalance() - existed.getAmount() + model.getAmount());
+        accountCredit.setBalance(accountCredit.getBalance() - existedOperation.getAmount() + model.getAmount());
         uow.accounts.save(accountCredit);
 
 
@@ -98,7 +98,7 @@ public class OperationsController extends SuperController<Operation, Long> {
         var accountCredit = uow.accounts.findById(model.getAccountCredit_id()).orElse(null);
 
         if (accountDebit == null || accountCredit == null || model.getAmount() > accountDebit.getBalance()) {
-            return ResponseEntity.ok(Map.of("code", -1, "message", "Insufficient balance"));
+            return ResponseEntity.ok(Map.of("code", -1, "message", "Solde insuffisant"));
         }
 
         accountDebit.setBalance(accountDebit.getBalance() - model.getAmount());
