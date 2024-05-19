@@ -8,7 +8,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class AppApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.load();
+		// Dotenv dotenv = Dotenv.load();
         // System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         // System.out.println("DATABASE_URL: " + dotenv.get("DATABASE_URL"));
         // System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
