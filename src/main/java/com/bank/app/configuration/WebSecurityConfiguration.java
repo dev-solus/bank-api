@@ -1,14 +1,13 @@
 package com.bank.app.configuration;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,32 +21,10 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfiguration.class);
 
-    // @Value("${springdoc.api-docs.path}")
-    // private String restApiDocPath;
-    // @Value("${springdoc.swagger-ui.path}")
-    // private String swaggerPath;
-
-    @Autowired
-    private Logger logger;
     @Autowired
     private JwtTokenFilter jwtTokenFilter;
-
-    // public WebSecurityConfiguration(Logger logger, JwtTokenFilter jwtTokenFilter)
-    // {
-    // super();
-
-    // this.logger = logger;
-
-    // // Inherit security context in async function calls
-    // SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    // }
-
-    // Set password encoding schema
-    // @Bean
-    // public BCryptPasswordEncoder passwordEncoder() {
-    //     return new BCryptPasswordEncoder();
-    // }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
