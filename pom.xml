@@ -52,16 +52,16 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.5.0</version>
 		  </dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator-core</artifactId>
-			<version>0.46</version> <!-- replace with the compatible version -->
+			<version>0.46</version> 
 		</dependency>
 		<dependency>
 			<groupId>io.github.classgraph</groupId>
 			<artifactId>classgraph</artifactId>
-			<version>4.8.104</version> <!-- replace with the compatible version -->
-		</dependency>
+			<version>4.8.171</version> 
+		</dependency> -->
 		<!-- <dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
