@@ -29,7 +29,7 @@ public class OperationsController extends SuperController<Operation, Long> {
         this.uow = uow;
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{accountId}")
     // @Override
     public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
@@ -45,28 +45,28 @@ public class OperationsController extends SuperController<Operation, Long> {
         return ResponseEntity.ok(Map.of("count", count, "list", list));
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/get")
     @Override
     public ResponseEntity<?> get() {
         return super.get();
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @PostMapping("/postRange")
     @Override
     public ResponseEntity<?> addRange(@RequestBody List<Operation> models) {
         return super.addRange(models);
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/getById/{id}")
     @Override
     public ResponseEntity<?> getById(@PathVariable Long id) {
         return super.getById(id);
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @PutMapping("/update/{id}")
     @Override
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Operation model) {
@@ -89,7 +89,7 @@ public class OperationsController extends SuperController<Operation, Long> {
         return super.update(id, model);
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @PostMapping("/add")
     @Override
     public ResponseEntity<?> add(@RequestBody Operation model) {
@@ -142,7 +142,7 @@ public class OperationsController extends SuperController<Operation, Long> {
         }
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @DeleteMapping("/delete/{id}")
     @Override
     public ResponseEntity<?> delete(@PathVariable Long id) {

@@ -29,7 +29,7 @@ public class UsersController extends SuperController<User, Long> {
         this.uow = uow;
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{firstname}/{cin}/{email}")
     // @Override
     public ResponseEntity<?> GetAll(
@@ -43,7 +43,12 @@ public class UsersController extends SuperController<User, Long> {
     ) {
         var sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
+        var isAdmin = uow.utils.isAdmin();
+        var userId = uow.utils.getUserId();
+        var user = uow.utils.getUser();
+
         var query = uow.users.findAll((r, q, cb) -> cb.and(
+                isAdmin ? cb.and() : cb.equal(r.get("id"), userId),
                 firstname.equals("*") ? cb.and()
                         : cb.or(
                                 cb.like(cb.lower(r.get("firstname")), "%" + firstname.toLowerCase() + "%"),
@@ -74,21 +79,21 @@ public class UsersController extends SuperController<User, Long> {
         return ResponseEntity.ok(Map.of("count", count, "list", list));
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/get")
     @Override
     public ResponseEntity<?> get() {
         return super.get();
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @PostMapping("/postRange")
     @Override
     public ResponseEntity<?> addRange(@RequestBody List<User> models) {
         return super.addRange(models);
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/getById/{id}")
     @Override
     public ResponseEntity<?> getById(@PathVariable Long id) {
@@ -99,7 +104,7 @@ public class UsersController extends SuperController<User, Long> {
         return ResponseEntity.ok(model);
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/getForSelect")
     public ResponseEntity<?> getForSelect() {
         var list = uow.users.getForSelect();
@@ -107,7 +112,7 @@ public class UsersController extends SuperController<User, Long> {
         return ResponseEntity.ok(list);
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/getWithAccounts")
     public ResponseEntity<?> getWithAccounts() {
         // var list = uow.users.findAll().stream().map(e -> new HashMap<String, Object>() {
@@ -138,7 +143,7 @@ public class UsersController extends SuperController<User, Long> {
         return ResponseEntity.ok(list);
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @PutMapping("/update/{id}")
     @Override
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody User model) {
@@ -159,7 +164,7 @@ public class UsersController extends SuperController<User, Long> {
         return ResponseEntity.ok(o);
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @PostMapping("/add")
     @Override
     public ResponseEntity<?> add(@RequestBody User model) {
@@ -169,34 +174,32 @@ public class UsersController extends SuperController<User, Long> {
     @PatchMapping(path = "/patch/{id}")
     @Override
     public ResponseEntity<?> patch(@PathVariable Long id, @RequestBody JsonPatch patch) {
-        Optional<User> optional = repository.findById(id);
+        var existant = repository.findById(id).orElse(null);
 
-        if (optional.isPresent() == false) {
+        if (existant == null) {
             return ResponseEntity.notFound().build();
         }
 
-        User target = optional.get();
-
         try {
 
-            JsonNode patched = patch.apply(uow.objectMapper.convertValue(target, JsonNode.class));
+            var patched = patch.apply(uow.objectMapper.convertValue(existant, JsonNode.class));
 
-            User model = uow.objectMapper.treeToValue(patched, User.class);
+            var model = uow.objectMapper.treeToValue(patched, User.class);
 
             repository.save(model);
 
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(Map.of("message","Enregiseremet reussi", "code", 1));
 
         } catch (Exception e) {
             if (e.getCause() != null && e.getCause() instanceof ConstraintViolationException) {
                 ConstraintViolationException se = (ConstraintViolationException) e.getCause();
-                return new ResponseEntity<>(se.getSQLException().getMessage(), HttpStatus.BAD_REQUEST);
+                return ResponseEntity.ok(Map.of("message", se.getSQLException().getMessage(), "code", -1));
             }
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(Map.of("message", e.getMessage(), "code", -1));
         }
     }
 
-    @RolesAllowed({ Roles.ADMIN, Roles.CLIENT, Roles.AGENT_GUICHET })
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @DeleteMapping("/delete/{id}")
     @Override
     public ResponseEntity<?> delete(@PathVariable Long id) {

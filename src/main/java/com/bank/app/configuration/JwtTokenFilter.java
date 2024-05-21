@@ -50,6 +50,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         r.email = jwtTokenUtil.getByClaim(token, "email").toString();
         r.role = jwtTokenUtil.getByClaim(token, "role").toString();
+        r.id = Long.parseLong(jwtTokenUtil.getByClaim(token, "id").toString());
 
         // add role user to current context, for matter of autorization in controller
         // level

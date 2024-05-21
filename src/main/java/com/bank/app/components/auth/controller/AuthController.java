@@ -69,31 +69,6 @@ public class AuthController {
         }
     }
 
-    @RolesAllowed({Roles.ADMIN})
-    @PostMapping("/registerBy")
-    public ResponseEntity<?> registerBy(@RequestBody User model) {
-        Optional<User> userExist = uow.users.findByEmail(model.getEmail());
-
-        if (userExist.isPresent() == true) {
-            return ResponseEntity.ok(Map.of("code", -1, "message", "[DEV] email used"));
-        }
-
-        // if (model.getTermeAccepted() == false ) {
-        //     return ResponseEntity.ok(Map.of("code", -2, "message", "Please accept the Terms of Use"));
-        // }
-
-        // model.setActive(Boolean.FALSE);
-
-        // model.setRole(Roles.NEWBIE);
-
-        model.setPassword(uow.bCrypt.encode(model.getPassword()));
-
-       uow.users.save(model);
-
-        return ResponseEntity.ok(Map.of("code", 1, "message", "Success"));
-
-    }
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User model) {
         Optional<User> userExist = uow.users.findByEmail(model.getEmail());
