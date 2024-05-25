@@ -76,6 +76,6 @@ Client dispose de plusieurs comptes, l’application affiche une liste déroulan
 RG_12, RG_13, RG_14 et RG_15. 
 - [ ] RG_11 : Le compte bancaire ne doit pas être bloqué ou clôturé. 
 - [ ] RG_12 : Le solde de compte doit être supérieur au montant du virement. 
-- [ ] RG_13 : Le compte du client sera débité du montant du virement. 
+- [ ] RG_13 : Le compte du client sera débité du  montant du virement. 
 - [ ] RG_14 : Le compte du client destinataire sera crédité du montant du virement. 
 - [ ] RG_15 : L’application doit tracer les deux opérations avec leurs dates précises.

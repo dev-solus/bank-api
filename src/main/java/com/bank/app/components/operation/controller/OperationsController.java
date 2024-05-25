@@ -14,6 +14,7 @@ import com.bank.app.shared.repository.UowService;
 import com.bank.app.shared.dto.Roles;
 import com.bank.app.components.account.model.Account;
 import com.bank.app.components.operation.model.*;
+import com.bank.app.components.user.model.User;
 
 import org.springframework.data.domain.*;
 import org.hibernate.exception.ConstraintViolationException;
@@ -29,21 +30,84 @@ public class OperationsController extends SuperController<Operation, Long> {
         this.uow = uow;
     }
 
+    // @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
+    // @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{accountId}")
+    // // @Override
+    // public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
+    //         @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable Long accountId) {
+    //     var sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+
+    //     var query = uow.operations.findAllQ(accountId, PageRequest.of(startIndex, pageSize, sort));
+
+    //     var list = query.getContent();
+
+    //     var count = query.getTotalElements();
+
+    //     return ResponseEntity.ok(Map.of("count", count, "list", list));
+    // }
+
     @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
-    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{accountId}")
+    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{filter}/{accountId}")
     // @Override
     public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
-            @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable Long accountId) {
+            @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable String filter, @PathVariable Long accountId) {
         var sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
 
-        var query = uow.operations.findAllQ(accountId, PageRequest.of(startIndex, pageSize, sort));
+        var query = uow.operations.findAll((r, q, cb) -> {
+
+            var filterPre = filter.equals("*") ? cb.and() : cb.or(
+                    cb.like(cb.lower(r.get("accountDebit").get("user").get("firstname")), "%" + filter.toLowerCase() + "%"),
+                    cb.like(cb.lower(r.get("accountDebit").get("user").get("lastname")), "%" + filter.toLowerCase() + "%"),
+                    cb.like(cb.lower(r.get("accountDebit").get("user").get("email")), "%" + filter.toLowerCase() + "%"),
+                    cb.like(cb.lower(r.get("accountDebit").get("user").get("cin")), "%" + filter.toLowerCase() + "%"),
+                    //
+                    cb.like(cb.lower(r.get("accountCredit").get("user").get("firstname")), "%" + filter.toLowerCase() + "%"),
+                    cb.like(cb.lower(r.get("accountCredit").get("user").get("lastname")), "%" + filter.toLowerCase() + "%"),
+                    cb.like(cb.lower(r.get("accountCredit").get("user").get("email")), "%" + filter.toLowerCase() + "%"),
+                    cb.like(cb.lower(r.get("accountCredit").get("user").get("cin")), "%" + filter.toLowerCase() + "%")
+                );
+
+            var accountIdPre = accountId == 0 ? cb.and() : cb.or(
+                cb.equal(r.get("accountDebit_id"), accountId),
+                cb.equal(r.get("accountCredit_id"), accountId)
+            );
+
+            return cb.and(filterPre, accountIdPre);
+        },
+                PageRequest.of(startIndex, pageSize, sort));
 
         var list = query.getContent();
 
         var count = query.getTotalElements();
 
-        return ResponseEntity.ok(Map.of("count", count, "list", list));
+        var accounts = getAccountsByUser(filter);
+
+        return ResponseEntity.ok(Map.of("count", count, "list", list, "accounts", accounts));
     }
+
+    private List<Account> getAccountsByUser(String filter) {
+        if (filter.equals("*")) {
+            return new ArrayList<>();
+        }
+
+        var accounts = uow.accounts.findAll((r, q, cb) -> cb.or(
+                cb.like(cb.lower(r.get("user").get("firstname")), "%" + filter.toLowerCase() + "%"),
+                cb.like(cb.lower(r.get("user").get("lastname")), "%" + filter.toLowerCase() + "%"),
+                cb.like(cb.lower(r.get("user").get("email")), "%" + filter.toLowerCase() + "%"),
+                cb.like(cb.lower(r.get("user").get("cin")), "%" + filter.toLowerCase() + "%")
+            )).stream().map(e -> Account
+                .builder()
+                .id(e.getId())
+                .accountNumber(e.getAccountNumber())
+                .balance(e.getBalance())
+                .user_id(e.getUser_id())
+                .build()
+            ).toList();
+
+        return accounts;
+    }
+
+    
 
     @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/get")
