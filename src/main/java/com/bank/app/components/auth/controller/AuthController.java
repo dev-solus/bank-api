@@ -103,17 +103,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDto model) {
-        Optional<User> op = uow.users.findByEmail(model.email);
+        var user = uow.users.findByEmail(model.email()).orElse(null);
 
-        if (op.isPresent() == false) {
+        if (user == null) {
             return ResponseEntity.ok(Map.of("code", -1, "message", "[DEV] email not found"));
         }
 
-        User user = op.get();
+        var passwordMatch = uow.bCrypt.matches(model.password(),user.getPassword());
 
-        boolean pwEqual = uow.bCrypt.matches(model.password,user.getPassword());
+        // var passwordMatch = uow.bCrypt.encode(model.password()).equals(user.getPassword());
 
-        if (!pwEqual)
+        if (!passwordMatch)
         {
             return ResponseEntity.ok(Map.of("code", -2, "message", "[DEV] password incorrect"));
         }
@@ -133,6 +133,36 @@ public class AuthController {
         String token = jwtTokenUtil.doGenerateToken(claims, user.getEmail());
 
         return ResponseEntity.ok(Map.of("token", token, "user", user, "message", "Successful", "code", 1));
+    }
+
+    // add endpoint that change the password and accept userId and password
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody UserDto model) {
+        var user = uow.users.findById(model.id()).orElse(null);
+
+        var isAdmin = uow.utils.isAdmin();
+        var userId = uow.utils.getUserId();
+
+        if (isAdmin == false && userId != model.id()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        if (user == null) {
+            return ResponseEntity.ok(Map.of("code", -1, "message", "[DEV] user not found"));
+        }
+
+        // var passwordMatch = uow.bCrypt.encode(model.password()).equals(user.getPassword());
+
+        // if (!passwordMatch)
+        // {
+        //     return ResponseEntity.ok(Map.of("code", -2, "message", "[DEV] password incorrect"));
+        // }
+
+        user.setPassword(uow.bCrypt.encode(model.password()));
+
+        uow.users.save(user);
+
+        return ResponseEntity.ok(Map.of("code", 1, "message", "Successful"));
     }
 
     @PostMapping("/resetPassword/{token}")
@@ -171,7 +201,7 @@ public class AuthController {
             return ResponseEntity.ok(Map.of("code", -1, "message", "No such a user"));
 
         User user = op.get();
-        user.setPassword(uow.bCrypt.encode(model.password));
+        user.setPassword(uow.bCrypt.encode(model.password()));
         user.setActive(Boolean.TRUE);
 
         uow.users.save(user);

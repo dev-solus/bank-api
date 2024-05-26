@@ -221,6 +221,27 @@ public class OperationsController extends SuperController<Operation, Long> {
     @DeleteMapping("/delete/{id}")
     @Override
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        return super.delete(id);
+        var model = repository.findById(id).orElse(null);
+
+        if (model == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var existedOperation = uow.operations.findById(id).orElse(null);
+
+        var accountDebit = uow.accounts.findById(model.getAccountDebit_id()).orElse(null);
+        var accountCredit = uow.accounts.findById(model.getAccountCredit_id()).orElse(null);
+
+        
+
+        accountDebit.setBalance(accountDebit.getBalance() +  model.getAmount());
+        uow.accounts.save(accountDebit);
+
+        accountCredit.setBalance(accountCredit.getBalance() - model.getAmount());
+        uow.accounts.save(accountCredit);
+
+        repository.deleteById(id);
+
+        return ResponseEntity.ok(Boolean.TRUE);
     }
 }

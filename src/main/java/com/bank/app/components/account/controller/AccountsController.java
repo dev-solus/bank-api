@@ -37,13 +37,18 @@ public class AccountsController extends SuperController<Account, Long> {
             @PathVariable Long balanceMax, @PathVariable Long user_id) {
         var sort = Sort.by(sortDir.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
 
-        var query = uow.accounts.findAll((r, q, cb) -> cb.and(
+        var isAdmin = uow.utils.isAdmin();
+        var userId = uow.utils.getUserId();
 
-                cin.equals("*") ? cb.and()
-                        : cb.like(cb.lower(r.get("user").get("cin")), "%" + cin.toLowerCase() + "%"),
-                balanceMin.equals(balanceMax) ? cb.and() : cb.between(r.get("balance"), balanceMin, balanceMax),
-                user_id.equals(0L) ? cb.and() : cb.equal(r.get("user_id"), user_id)),
-                PageRequest.of(startIndex, pageSize, sort));
+        var query = uow.accounts.findAll((r, q, cb) -> cb.and(
+            //
+            isAdmin ? cb.and() : cb.equal(r.get("user_id"), userId),
+            //
+            cin.equals("*") ? cb.and()
+                    : cb.like(cb.lower(r.get("user").get("cin")), "%" + cin.toLowerCase() + "%"),
+            balanceMin.equals(balanceMax) ? cb.and() : cb.between(r.get("balance"), balanceMin, balanceMax),
+            user_id.equals(0L) ? cb.and() : cb.equal(r.get("user_id"), user_id)),
+            PageRequest.of(startIndex, pageSize, sort));
 
         var list = query.getContent().stream().map(e -> new HashMap<String, Object>() {
             {
@@ -72,6 +77,33 @@ public class AccountsController extends SuperController<Account, Long> {
 
         return ResponseEntity.ok(Map.of("count", count, "list", list));
     }
+
+    // add endpoint to get all accounts by user_id
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
+    @GetMapping("/getAllByUserId/{user_id}")
+    public ResponseEntity<?> GetAllByUserId( @PathVariable Long user_id) {
+        var isAdmin = uow.utils.isAdmin();
+        var userId = uow.utils.getUserId();
+
+        var clientId = isAdmin ? user_id : userId;
+
+        var list = uow.accounts
+            .findAll((r, q, cb) -> cb.equal(r.get("user_id"), clientId))
+            .stream().map(e -> new HashMap<String, Object>() {
+                {
+                    put("accountNumber", e.getAccountNumber());
+                    put("balance", e.getBalance());
+                    put("id", e.getId());
+                    put("status", e.getStatus());
+                    put("user_id", e.getUser_id());
+                }
+            })
+            .toList();
+
+
+        return ResponseEntity.ok(list);
+    }
+    
 
     @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/get")

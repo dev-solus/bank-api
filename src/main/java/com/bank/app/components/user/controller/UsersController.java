@@ -45,7 +45,6 @@ public class UsersController extends SuperController<User, Long> {
 
         var isAdmin = uow.utils.isAdmin();
         var userId = uow.utils.getUserId();
-        var user = uow.utils.getUser();
 
         var query = uow.users.findAll((r, q, cb) -> cb.and(
                 isAdmin ? cb.and() : cb.equal(r.get("id"), userId),
@@ -85,7 +84,7 @@ public class UsersController extends SuperController<User, Long> {
     public ResponseEntity<?> autoComplete(@PathVariable String filter) {
         var sort = Sort.by(Sort.Direction.fromString("desc"), "id");
 
-        var query = uow.operations.findAll((r, q, cb) -> filter.equals("*") ? cb.and() : cb.or(
+        var query = uow.users.findAll((r, q, cb) -> filter.equals("*") ? cb.and() : cb.or(
             cb.like(cb.lower(r.get("firstname")), "%" + filter.toLowerCase() + "%"),
             cb.like(cb.lower(r.get("lastname")), "%" + filter.toLowerCase() + "%"),
             cb.like(cb.lower(r.get("email")), "%" + filter.toLowerCase() + "%"),
@@ -115,6 +114,12 @@ public class UsersController extends SuperController<User, Long> {
     @GetMapping("/getById/{id}")
     @Override
     public ResponseEntity<?> getById(@PathVariable Long id) {
+        var isAdmin = uow.utils.isAdmin();
+        var userId = uow.utils.getUserId();
+
+        if (isAdmin == false && userId != id) {
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
         var model = repository.findById(id).orElse(null);
 
         model.setPassword(null);
@@ -165,6 +170,13 @@ public class UsersController extends SuperController<User, Long> {
     @PutMapping("/update/{id}")
     @Override
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody User model) {
+        var isAdmin = uow.utils.isAdmin();
+        var userId = uow.utils.getUserId();
+
+        if (isAdmin == false && userId != id) {
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
+        
         var existed = repository.findById(id);
 
         if(existed.isPresent() == false){
@@ -199,7 +211,6 @@ public class UsersController extends SuperController<User, Long> {
         }
 
         try {
-
             var patched = patch.apply(uow.objectMapper.convertValue(existant, JsonNode.class));
 
             var model = uow.objectMapper.treeToValue(patched, User.class);
