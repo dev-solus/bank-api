@@ -47,65 +47,76 @@ public class OperationsController extends SuperController<Operation, Long> {
     // }
 
     @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
-    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{filter}/{accountId}")
+    @GetMapping("/getAll/{startIndex}/{pageSize}/{sortBy}/{sortDir}/{userId}/{accountId}")
     // @Override
     public ResponseEntity<?> GetAll(@PathVariable int startIndex, @PathVariable int pageSize,
-            @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable String filter, @PathVariable Long accountId) {
+            @PathVariable String sortBy, @PathVariable String sortDir, @PathVariable Long userId, @PathVariable Long accountId) {
         var sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
 
+        var clientId = uow.utils.getUserId();
+        var isAdmin = uow.utils.isAdmin();
+
+        final var _userId = isAdmin ? userId : clientId;
+
         var query = uow.operations.findAll((r, q, cb) -> {
+            var userPre = _userId.equals(0L) ? cb.and() : cb.or(
+                cb.equal(r.get("accountDebit").get("user_id"), _userId),
+                cb.equal(r.get("accountDebit").get("user_id"), _userId),
+                cb.equal(r.get("accountDebit").get("user_id"), _userId),
+                cb.equal(r.get("accountDebit").get("user_id"), _userId),
+                //
+                cb.equal(r.get("accountCredit").get("user_id"), _userId),
+                cb.equal(r.get("accountCredit").get("user_id"), _userId),
+                cb.equal(r.get("accountCredit").get("user_id"), _userId),
+                cb.equal(r.get("accountCredit").get("user_id"), _userId)
+            );
 
-            var filterPre = filter.equals("*") ? cb.and() : cb.or(
-                    cb.like(cb.lower(r.get("accountDebit").get("user").get("firstname")), "%" + filter.toLowerCase() + "%"),
-                    cb.like(cb.lower(r.get("accountDebit").get("user").get("lastname")), "%" + filter.toLowerCase() + "%"),
-                    cb.like(cb.lower(r.get("accountDebit").get("user").get("email")), "%" + filter.toLowerCase() + "%"),
-                    cb.like(cb.lower(r.get("accountDebit").get("user").get("cin")), "%" + filter.toLowerCase() + "%"),
-                    //
-                    cb.like(cb.lower(r.get("accountCredit").get("user").get("firstname")), "%" + filter.toLowerCase() + "%"),
-                    cb.like(cb.lower(r.get("accountCredit").get("user").get("lastname")), "%" + filter.toLowerCase() + "%"),
-                    cb.like(cb.lower(r.get("accountCredit").get("user").get("email")), "%" + filter.toLowerCase() + "%"),
-                    cb.like(cb.lower(r.get("accountCredit").get("user").get("cin")), "%" + filter.toLowerCase() + "%")
-                );
-
-            var accountIdPre = accountId == 0 ? cb.and() : cb.or(
+            var accountPre = accountId.equals(0L) ? cb.and() : cb.or(
                 cb.equal(r.get("accountDebit_id"), accountId),
                 cb.equal(r.get("accountCredit_id"), accountId)
             );
 
-            return cb.and(filterPre, accountIdPre);
-        },
-                PageRequest.of(startIndex, pageSize, sort));
+            return cb.and(userPre, accountPre);
+        }, PageRequest.of(startIndex, pageSize, sort));
 
         var list = query.getContent();
 
         var count = query.getTotalElements();
 
-        var accounts = getAccountsByUser(filter);
-
-        return ResponseEntity.ok(Map.of("count", count, "list", list, "accounts", accounts));
+        return ResponseEntity.ok(Map.of("count", count, "list", list));
     }
 
-    private List<Account> getAccountsByUser(String filter) {
-        if (filter.equals("*")) {
-            return new ArrayList<>();
-        }
+    // private List<Account> getAccountsByUser(String filter) {
+    //     var isAdmin = uow.utils.isAdmin();
 
-        var accounts = uow.accounts.findAll((r, q, cb) -> cb.or(
-                cb.like(cb.lower(r.get("user").get("firstname")), "%" + filter.toLowerCase() + "%"),
-                cb.like(cb.lower(r.get("user").get("lastname")), "%" + filter.toLowerCase() + "%"),
-                cb.like(cb.lower(r.get("user").get("email")), "%" + filter.toLowerCase() + "%"),
-                cb.like(cb.lower(r.get("user").get("cin")), "%" + filter.toLowerCase() + "%")
-            )).stream().map(e -> Account
-                .builder()
-                .id(e.getId())
-                .accountNumber(e.getAccountNumber())
-                .balance(e.getBalance())
-                .user_id(e.getUser_id())
-                .build()
-            ).toList();
+    //     if (filter.equals("*") && isAdmin) {
+    //         return new ArrayList<>();
+    //     }
 
-        return accounts;
-    }
+    //     var userId = uow.utils.getUserId();
+
+    //     var accounts = uow.accounts.findAll((r, q, cb) -> {
+    //         var clientPre = isAdmin ? cb.and() :  cb.equal(r.get("user_id"), userId);
+
+    //         var filterPre = filter.equals("*") ? cb.and() : cb.or(
+    //             cb.like(cb.lower(r.get("user").get("firstname")), "%" + filter.toLowerCase() + "%"),
+    //             cb.like(cb.lower(r.get("user").get("lastname")), "%" + filter.toLowerCase() + "%"),
+    //             cb.like(cb.lower(r.get("user").get("email")), "%" + filter.toLowerCase() + "%"),
+    //             cb.like(cb.lower(r.get("user").get("cin")), "%" + filter.toLowerCase() + "%")
+    //         );
+
+    //         return cb.and(filterPre, clientPre);
+    //     }).stream().map(e -> Account
+    //             .builder()
+    //             .id(e.getId())
+    //             .accountNumber(e.getAccountNumber())
+    //             .balance(e.getBalance())
+    //             .user_id(e.getUser_id())
+    //             .build()
+    //         ).toList();
+
+    //     return accounts;
+    // }
 
     
 

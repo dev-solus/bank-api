@@ -80,6 +80,24 @@ public class UsersController extends SuperController<User, Long> {
     }
 
     @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
+    @GetMapping("/autoComplete/{filter}")
+    // @Override
+    public ResponseEntity<?> autoComplete(@PathVariable String filter) {
+        var sort = Sort.by(Sort.Direction.fromString("desc"), "id");
+
+        var query = uow.operations.findAll((r, q, cb) -> filter.equals("*") ? cb.and() : cb.or(
+            cb.like(cb.lower(r.get("firstname")), "%" + filter.toLowerCase() + "%"),
+            cb.like(cb.lower(r.get("lastname")), "%" + filter.toLowerCase() + "%"),
+            cb.like(cb.lower(r.get("email")), "%" + filter.toLowerCase() + "%"),
+            cb.like(cb.lower(r.get("cin")), "%" + filter.toLowerCase() + "%")
+        ), PageRequest.of(0, 10, sort));
+
+        var list = query.getContent();
+
+        return ResponseEntity.ok(list);
+    }
+
+    @RolesAllowed({ Roles.CLIENT, Roles.AGENT_GUICHET })
     @GetMapping("/get")
     @Override
     public ResponseEntity<?> get() {

@@ -37,4 +37,10 @@ public class UtilsService {
 	public Long getUserId() {
 		return (Long) this.getUser().get("id");
 	}
+
+	public String getUserRole() {
+		return this.getUser().get("role").toString();
+	}
+
+
 }
