@@ -117,7 +117,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	<!-- <repositories>
+	<repositories>
 		<repository>
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>
@@ -152,6 +152,6 @@
 				<enabled>false</enabled>
 			</releases>
 		</pluginRepository>
-	</pluginRepositories> -->
+	</pluginRepositories>
 
 </project>
